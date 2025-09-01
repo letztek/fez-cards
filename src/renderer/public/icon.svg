@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor">
+  <defs>
+    <linearGradient id="cardGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#8B5CF6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#EF4444;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Card Background -->
+  <rect x="64" y="96" width="384" height="320" rx="24" ry="24" fill="url(#cardGradient)" stroke="#1F2937" stroke-width="4"/>
+  
+  <!-- Inner Card Frame -->
+  <rect x="88" y="120" width="336" height="272" rx="12" ry="12" fill="none" stroke="white" stroke-width="2" opacity="0.8"/>
+  
+  <!-- Symbols representing the three classes -->
+  <!-- Sword (Warrior) -->
+  <g transform="translate(140, 180)">
+    <rect x="14" y="8" width="4" height="40" fill="white"/>
+    <rect x="8" y="4" width="16" height="8" fill="white"/>
+    <rect x="10" y="48" width="12" height="16" fill="white"/>
+  </g>
+  
+  <!-- Staff (Mage) -->
+  <g transform="translate(256, 180)">
+    <circle cx="16" cy="8" r="8" fill="white"/>
+    <rect x="14" y="16" width="4" height="32" fill="white"/>
+    <rect x="8" y="48" width="16" height="8" fill="white"/>
+  </g>
+  
+  <!-- Bow (Ranger) -->
+  <g transform="translate(372, 180)">
+    <path d="M8,8 Q16,4 24,8 L24,56 Q16,60 8,56 Z" fill="none" stroke="white" stroke-width="3"/>
+    <line x1="8" y1="32" x2="24" y2="32" stroke="white" stroke-width="2"/>
+    <circle cx="26" cy="32" r="2" fill="white"/>
+  </g>
+  
+  <!-- Game Title -->
+  <text x="256" y="320" text-anchor="middle" font-family="Arial, sans-serif" font-size="36" font-weight="bold" fill="white">
+    FEZ
+  </text>
+  <text x="256" y="350" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="white" opacity="0.9">
+    CARD GAME
+  </text>
+</svg>

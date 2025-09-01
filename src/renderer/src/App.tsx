@@ -1,0 +1,346 @@
+import React, { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { useGameStore } from '../stores/game-store';
+import { GameBoard } from '../components/GameBoard';
+import { Button } from '../components/Button';
+import { LoadingSpinner } from '../components/LoadingSpinner';
+import { ErrorBoundary } from '../components/ErrorBoundary';
+import { AIFactory } from '../utils/ai-strategy';
+import { BattleResult } from '../types/card';
+import { SimpleImageTest } from './SimpleImageTest';
+import { GameDebug } from './GameDebug';
+
+
+function App() {
+  const {
+    gameState,
+    settings,
+    isLoading,
+    error,
+    initializeGame,
+    startNewGame,
+    selectCard,
+    playRound,
+    completeRound,
+    setGamePhase,
+    clearError,
+    resetGame
+  } = useGameStore();
+
+  const [currentBattleResult, setCurrentBattleResult] = useState<BattleResult | undefined>();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [showImageTest, setShowImageTest] = useState(false);
+  const [showGameDebug, setShowGameDebug] = useState(false);
+
+  useEffect(() => {
+    console.log('App mounted, initializing game...');
+    initializeGame();
+  }, [initializeGame]);
+
+  const handleStartGame = () => {
+    clearError();
+    startNewGame();
+  };
+
+  const handleCardSelect = (card: any) => {
+    selectCard(card.id);
+  };
+
+  const handleBattleConfirm = async () => {
+    if (!gameState.selectedCard) return;
+
+    setIsProcessing(true);
+    try {
+      // AI selects a card
+      const ai = AIFactory.createAI(settings.aiDifficulty);
+      const aiCard = ai.selectCard(gameState.computerHand, {
+        playerPreviousCards: gameState.battleHistory.map(b => b.playerCard),
+        currentRound: gameState.currentRound,
+        playerScore: gameState.playerScore,
+        computerScore: gameState.computerScore
+      });
+
+      // Play the round
+      const result = await playRound(gameState.selectedCard.id, aiCard);
+      setCurrentBattleResult(result);
+    } catch (err) {
+      console.error('Battle error:', err);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleNextRound = () => {
+    if (currentBattleResult) {
+      completeRound(currentBattleResult);
+      setCurrentBattleResult(undefined);
+    }
+  };
+
+  const handleResetGame = () => {
+    setCurrentBattleResult(undefined);
+    resetGame();
+  };
+
+  // Debug info
+  console.log('App render - isLoading:', isLoading, 'error:', error, 'gameState.phase:', gameState.phase);
+
+  // 顯示圖片測試頁面
+  if (showImageTest) {
+    return (
+      <div>
+        <div className="fixed top-4 right-4 z-50">
+          <button
+            onClick={() => setShowImageTest(false)}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+          >
+            返回遊戲
+          </button>
+        </div>
+        <SimpleImageTest />
+      </div>
+    );
+  }
+
+  // 顯示遊戲除錯頁面
+  if (showGameDebug) {
+    return (
+      <div>
+        <div className="fixed top-4 right-4 z-50">
+          <button
+            onClick={() => setShowGameDebug(false)}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+          >
+            返回遊戲
+          </button>
+        </div>
+        <GameDebug />
+      </div>
+    );
+  }
+
+  // 除錯按鈕
+  const debugButton = (
+    <div className="fixed top-4 left-4 z-50 space-y-2">
+      <button
+        onClick={() => setShowImageTest(true)}
+        className="block bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm"
+      >
+        圖片測試
+      </button>
+      <button
+        onClick={() => setShowGameDebug(true)}
+        className="block bg-orange-600 hover:bg-orange-700 text-white px-3 py-1 rounded text-sm"
+      >
+        遊戲除錯
+      </button>
+      <button
+        onClick={() => {
+          console.log('=== 遊戲狀態除錯 ===');
+          console.log('gameState:', gameState);
+          console.log('playerHand:', gameState.playerHand);
+          console.log('computerHand:', gameState.computerHand);
+          console.log('isLoading:', isLoading);
+          console.log('error:', error);
+        }}
+        className="block bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm"
+      >
+        除錯資訊
+      </button>
+    </div>
+  );
+
+  // Loading screen
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white flex items-center justify-center">
+        <LoadingSpinner size="large" message="正在載入卡牌資料..." />
+      </div>
+    );
+  }
+
+  // Error screen
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-400 text-4xl mb-4">❌</div>
+          <h2 className="text-xl font-bold text-red-400 mb-2">載入錯誤</h2>
+          <p className="text-gray-300 mb-4 max-w-md">{error}</p>
+          <Button onClick={() => { clearError(); initializeGame(); }} variant="primary">
+            重新載入
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Menu screen
+  if (gameState.phase === 'menu') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white">
+        {debugButton}
+        <div className="container mx-auto px-4 py-8">
+          <motion.header
+            className="text-center mb-8"
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <h1 className="text-6xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+              Fez Card Game
+            </h1>
+            <p className="text-slate-400 text-lg">
+              三職業相剋的回合制卡牌對戰遊戲
+            </p>
+          </motion.header>
+
+          <motion.main
+            className="flex items-center justify-center min-h-[60vh]"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <div className="text-center">
+              <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg p-8 shadow-xl max-w-md">
+                <h2 className="text-2xl font-semibold mb-6">準備開始遊戲</h2>
+
+                <div className="grid grid-cols-3 gap-4 text-sm mb-8">
+                  <motion.div
+                    className="bg-red-900/30 p-3 rounded border border-red-500/30"
+                    whileHover={{ scale: 1.05 }}
+                  >
+                    <div className="text-red-300 font-medium">⚔️ 戰士</div>
+                    <div className="text-xs text-slate-400 mt-1">克制遊俠</div>
+                  </motion.div>
+                  <motion.div
+                    className="bg-blue-900/30 p-3 rounded border border-blue-500/30"
+                    whileHover={{ scale: 1.05 }}
+                  >
+                    <div className="text-blue-300 font-medium">🔮 法師</div>
+                    <div className="text-xs text-slate-400 mt-1">克制戰士</div>
+                  </motion.div>
+                  <motion.div
+                    className="bg-green-900/30 p-3 rounded border border-green-500/30"
+                    whileHover={{ scale: 1.05 }}
+                  >
+                    <div className="text-green-300 font-medium">🏹 遊俠</div>
+                    <div className="text-xs text-slate-400 mt-1">克制法師</div>
+                  </motion.div>
+                </div>
+
+                <div className="text-sm text-slate-300 mb-6">
+                  <div className="mb-2">遊戲設定</div>
+                  <div className="text-xs text-slate-400">
+                    回合數: {settings.maxRounds} | 難度: {settings.aiDifficulty}
+                  </div>
+                </div>
+
+                <Button
+                  onClick={handleStartGame}
+                  variant="primary"
+                  size="large"
+                  className="w-full"
+                >
+                  開始遊戲
+                </Button>
+              </div>
+            </div>
+          </motion.main>
+        </div>
+      </div>
+    );
+  }
+
+  // Result screen
+  if (gameState.phase === 'result') {
+    const playerWins = gameState.battleHistory.filter(b => b.winner === 'player').length;
+    const computerWins = gameState.battleHistory.filter(b => b.winner === 'computer').length;
+    const ties = gameState.battleHistory.filter(b => b.winner === 'tie').length;
+
+    const finalWinner = playerWins > computerWins ? 'player' :
+      computerWins > playerWins ? 'computer' : 'tie';
+
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white flex items-center justify-center">
+        <motion.div
+          className="text-center max-w-md mx-4"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg p-8 shadow-xl">
+            <div className="text-6xl mb-4">
+              {finalWinner === 'player' ? '🎉' : finalWinner === 'computer' ? '😔' : '🤝'}
+            </div>
+
+            <h2 className="text-2xl font-bold mb-4">
+              {finalWinner === 'player' ? '恭喜獲勝！' :
+                finalWinner === 'computer' ? '很遺憾敗北' : '平手！'}
+            </h2>
+
+            <div className="text-lg mb-6">
+              <div className="flex justify-between items-center mb-2">
+                <span>玩家</span>
+                <span className="font-bold text-blue-400">{playerWins} 勝</span>
+              </div>
+              <div className="flex justify-between items-center mb-2">
+                <span>電腦</span>
+                <span className="font-bold text-red-400">{computerWins} 勝</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span>平手</span>
+                <span className="font-bold text-yellow-400">{ties} 場</span>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <Button
+                onClick={handleStartGame}
+                variant="primary"
+                size="large"
+                className="w-full"
+              >
+                再玩一局
+              </Button>
+              <Button
+                onClick={handleResetGame}
+                variant="secondary"
+                className="w-full"
+              >
+                返回主選單
+              </Button>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // Game screen
+  return (
+    <ErrorBoundary>
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white">
+        {debugButton}
+        <div className="container mx-auto px-4 py-6">
+          <GameBoard
+            playerHand={gameState.playerHand}
+            computerHand={gameState.computerHand}
+            playerScore={gameState.playerScore}
+            computerScore={gameState.computerScore}
+            currentRound={gameState.currentRound}
+            maxRounds={gameState.maxRounds}
+            selectedCard={gameState.selectedCard}
+            battleResult={currentBattleResult}
+            onCardSelect={handleCardSelect}
+            onBattleConfirm={handleBattleConfirm}
+            onNextRound={handleNextRound}
+            isProcessing={isProcessing}
+          />
+        </div>
+      </div>
+    </ErrorBoundary>
+  );
+}
+
+export default App;
