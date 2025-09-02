@@ -1,14 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useGameStore } from '../stores/game-store';
 import { GameBoard } from '../components/GameBoard';
 import { Button } from '../components/Button';
-import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { AIFactory } from '../utils/ai-strategy';
 import { BattleResult } from '../types/card';
 import { SimpleImageTest } from './SimpleImageTest';
 import { GameDebug } from './GameDebug';
+import { ButtonTest } from './ButtonTest';
+import { TestModal } from './TestModal';
+import { SimpleModal } from './SimpleModal';
+import { Settings } from '../components/Settings';
+import { Statistics } from '../components/Statistics';
+import { KeyboardHelp } from '../components/KeyboardHelp';
+import { useGameKeyboard } from '../hooks/useKeyboard';
 
 
 function App() {
@@ -22,7 +28,6 @@ function App() {
     selectCard,
     playRound,
     completeRound,
-    setGamePhase,
     clearError,
     resetGame
   } = useGameStore();
@@ -31,6 +36,12 @@ function App() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [showImageTest, setShowImageTest] = useState(false);
   const [showGameDebug, setShowGameDebug] = useState(false);
+  const [showButtonTest, setShowButtonTest] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [showStatistics, setShowStatistics] = useState(false);
+  const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
+  const [showTestModal, setShowTestModal] = useState('');
+  const [showSimpleModal, setShowSimpleModal] = useState('');
 
   useEffect(() => {
     console.log('App mounted, initializing game...');
@@ -82,6 +93,41 @@ function App() {
     resetGame();
   };
 
+  const handleCardSelectByIndex = (index: number) => {
+    if (gameState.playerHand[index]) {
+      handleCardSelect(gameState.playerHand[index]);
+    }
+  };
+
+  const handleEscape = () => {
+    if (showSettings) {
+      setShowSettings(false);
+    } else if (showStatistics) {
+      setShowStatistics(false);
+    } else if (showImageTest) {
+      setShowImageTest(false);
+    } else if (showGameDebug) {
+      setShowGameDebug(false);
+    } else if (showButtonTest) {
+      setShowButtonTest(false);
+    } else if (showKeyboardHelp) {
+      setShowKeyboardHelp(false);
+    } else if (gameState.phase === 'playing' || gameState.phase === 'battle') {
+      // 返回主選單
+      handleResetGame();
+    }
+  };
+
+  // 設定快捷鍵（暫時關閉以測試按鈕問題）
+  // useGameKeyboard(
+  //   handleCardSelectByIndex,
+  //   handleBattleConfirm,
+  //   handleNextRound,
+  //   handleEscape,
+  //   gameState.phase,
+  //   !showSettings && !showStatistics && !showImageTest && !showGameDebug && !showKeyboardHelp && !showButtonTest
+  // );
+
   // Debug info
   console.log('App render - isLoading:', isLoading, 'error:', error, 'gameState.phase:', gameState.phase);
 
@@ -119,6 +165,23 @@ function App() {
     );
   }
 
+  // 顯示按鈕測試頁面
+  if (showButtonTest) {
+    return (
+      <div>
+        <div className="fixed top-4 right-4 z-50">
+          <button
+            onClick={() => setShowButtonTest(false)}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+          >
+            返回遊戲
+          </button>
+        </div>
+        <ButtonTest />
+      </div>
+    );
+  }
+
   // 除錯按鈕
   const debugButton = (
     <div className="fixed top-4 left-4 z-50 space-y-2">
@@ -133,6 +196,21 @@ function App() {
         className="block bg-orange-600 hover:bg-orange-700 text-white px-3 py-1 rounded text-sm"
       >
         遊戲除錯
+      </button>
+      <button
+        onClick={() => setShowButtonTest(true)}
+        className="block bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm"
+      >
+        按鈕測試
+      </button>
+      <button
+        onClick={() => {
+          console.log('顯示簡單模態窗口');
+          setShowSimpleModal('調試');
+        }}
+        className="block bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm"
+      >
+        簡單模態
       </button>
       <button
         onClick={() => {
@@ -154,7 +232,37 @@ function App() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white flex items-center justify-center">
-        <LoadingSpinner size="large" message="正在載入卡牌資料..." />
+        <motion.div
+          className="text-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="mb-8">
+            <motion.div
+              className="text-6xl mb-4"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            >
+              🎴
+            </motion.div>
+            <h2 className="text-2xl font-bold mb-2">Fez Card Game</h2>
+            <p className="text-slate-400">正在載入卡牌資料...</p>
+          </div>
+          
+          <div className="w-64 bg-slate-700 rounded-full h-2 mx-auto">
+            <motion.div
+              className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full"
+              initial={{ width: 0 }}
+              animate={{ width: "100%" }}
+              transition={{ duration: 2, ease: "easeInOut" }}
+            />
+          </div>
+          
+          <div className="mt-4 text-sm text-slate-500">
+            載入中，請稍候...
+          </div>
+        </motion.div>
       </div>
     );
   }
@@ -236,18 +344,73 @@ function App() {
                   </div>
                 </div>
 
-                <Button
-                  onClick={handleStartGame}
-                  variant="primary"
-                  size="large"
-                  className="w-full"
-                >
-                  開始遊戲
-                </Button>
+                <div className="space-y-3">
+                  <Button
+                    onClick={handleStartGame}
+                    variant="primary"
+                    size="large"
+                    className="w-full"
+                  >
+                    開始遊戲
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      console.log('設定按鈕被點擊了！');
+                      setShowSettings(true);
+                    }}
+                    variant="secondary"
+                    className="w-full"
+                  >
+                    遊戲設定 (簡單測試)
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      console.log('統計按鈕被點擊了！');
+                      setShowStatistics(true);
+                    }}
+                    variant="secondary"
+                    className="w-full"
+                  >
+                    遊戲統計 (簡單測試)
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      console.log('快捷鍵按鈕被點擊了！');
+                      setShowKeyboardHelp(true);
+                    }}
+                    variant="secondary"
+                    className="w-full text-sm"
+                  >
+                    ⌨️ 快捷鍵說明 (簡單測試)
+                  </Button>
+                </div>
               </div>
             </div>
           </motion.main>
         </div>
+        
+        {/* Settings Modal - 在 menu 階段也要顯示 */}
+        {showSettings && (
+          <Settings onClose={() => setShowSettings(false)} />
+        )}
+        
+        {/* Statistics Modal - 在 menu 階段也要顯示 */}
+        {showStatistics && (
+          <Statistics onClose={() => setShowStatistics(false)} />
+        )}
+        
+        {/* Keyboard Help Modal - 在 menu 階段也要顯示 */}
+        {showKeyboardHelp && (
+          <KeyboardHelp onClose={() => setShowKeyboardHelp(false)} />
+        )}
+        
+        {/* Simple Modal - 保留用於調試 */}
+        {showSimpleModal && (
+          <SimpleModal 
+            title={`簡單模態窗口 - ${showSimpleModal}`}
+            onClose={() => setShowSimpleModal('')} 
+          />
+        )}
       </div>
     );
   }
@@ -338,6 +501,61 @@ function App() {
             isProcessing={isProcessing}
           />
         </div>
+        
+        {/* Settings Modal */}
+        {showSettings && (
+          <Settings onClose={() => setShowSettings(false)} />
+        )}
+        
+        {/* Statistics Modal */}
+        {showStatistics && (
+          <Statistics onClose={() => setShowStatistics(false)} />
+        )}
+        
+        {/* Keyboard Help Modal */}
+        {showKeyboardHelp && (
+          <KeyboardHelp onClose={() => setShowKeyboardHelp(false)} />
+        )}
+        
+        {/* Test Modal */}
+        {showTestModal && (
+          <TestModal 
+            title={`測試模態窗口 - ${showTestModal}`}
+            onClose={() => setShowTestModal('')} 
+          />
+        )}
+        
+        {/* Simple Modal */}
+        {showSimpleModal && (
+          <SimpleModal 
+            title={`簡單模態窗口 - ${showSimpleModal}`}
+            onClose={() => setShowSimpleModal('')} 
+          />
+        )}
+        
+        {/* Debug: Always visible modal test */}
+        {gameState.phase === 'menu' && (
+          <div 
+            id="debug-modal-test"
+            style={{
+              position: 'fixed',
+              top: '20px',
+              right: '20px',
+              backgroundColor: '#ef4444',
+              color: 'white',
+              padding: '10px',
+              borderRadius: '4px',
+              zIndex: 10000,
+              fontSize: '12px',
+              maxWidth: '200px'
+            }}
+          >
+            <div>🔍 模態窗口調試測試</div>
+            <div style={{ marginTop: '4px', fontSize: '10px' }}>
+              如果你能看到這個紅色方塊，說明固定定位和高 z-index 可以工作
+            </div>
+          </div>
+        )}
       </div>
     </ErrorBoundary>
   );

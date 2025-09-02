@@ -91,6 +91,7 @@ export class CardLoader {
       class: cardClass,
       gender,
       imageUrl: filePath,
+      backImageUrl: '/cards/back.jpg',
       name,
       description: `${cardClass === CardClass.WARRIOR ? '戰士' : 
                      cardClass === CardClass.MAGE ? '法師' : '遊俠'} - ${

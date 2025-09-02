@@ -129,12 +129,22 @@ export const Card: React.FC<CardProps> = ({
           <div
             className={`
               absolute inset-0 w-full h-full
-              rounded-lg border-2 ${cardStyle.border}
-              bg-gradient-to-b from-slate-800 to-slate-900
+              rounded-lg border-2 border-gray-600
               shadow-lg overflow-hidden
             `}
           >
-            <div className="w-full h-full flex items-center justify-center">
+            <img
+              src={card.backImageUrl}
+              alt="Card Back"
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                console.error('Failed to load card back image:', card.backImageUrl);
+                // 如果背面圖片載入失敗，顯示預設背面
+                (e.target as HTMLImageElement).style.display = 'none';
+              }}
+            />
+            {/* 預設背面 fallback */}
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-b from-slate-800 to-slate-900 absolute top-0 left-0 -z-10">
               <div className="text-white/80 text-center p-4">
                 <div className="text-2xl font-bold mb-2">FEZ</div>
                 <div className="text-sm">CARD GAME</div>
@@ -153,13 +163,13 @@ export const Card: React.FC<CardProps> = ({
             `}
           >
             {/* Card Image */}
-            <div className="relative w-full h-3/4 overflow-hidden">
+            <div className="relative w-full h-4/5 bg-gray-800/20">
               {!imageError ? (
                 <img
                   src={card.imageUrl}
                   alt={card.name}
                   className={`
-                  w-full h-full object-cover transition-opacity duration-300
+                  w-full h-full object-contain transition-opacity duration-300
                   ${imageLoaded ? 'opacity-100' : 'opacity-0'}
                 `}
                   onLoad={handleImageLoad}

@@ -4,6 +4,7 @@ import { Card, GameState, GameSettings, BattleResult, CardSet, GamePhase } from 
 import { CardLoader } from '../utils/card-loader';
 import { CardManager } from '../utils/card-manager';
 import { BattleEngine } from '../utils/battle-engine';
+import { StorageManager } from '../utils/storage';
 
 interface GameStore {
   // State
@@ -33,6 +34,12 @@ const DEFAULT_SETTINGS: GameSettings = {
   theme: 'dark'
 };
 
+// 載入儲存的設定
+const loadStoredSettings = (): GameSettings => {
+  const stored = StorageManager.loadSettings();
+  return stored ? { ...DEFAULT_SETTINGS, ...stored } : DEFAULT_SETTINGS;
+};
+
 const INITIAL_GAME_STATE: GameState = {
   phase: 'menu',
   currentRound: 1,
@@ -49,7 +56,7 @@ export const useGameStore = create<GameStore>()(
   immer((set, get) => ({
     // Initial state
     gameState: INITIAL_GAME_STATE,
-    settings: DEFAULT_SETTINGS,
+    settings: loadStoredSettings(),
     cardSet: null,
     cardManager: null,
     isLoading: false,
@@ -201,6 +208,16 @@ export const useGameStore = create<GameStore>()(
 
         if (isGameOver) {
           state.gameState.phase = 'result';
+          
+          // 計算最終勝負並更新統計
+          const playerWins = state.gameState.battleHistory.filter(b => b.winner === 'player').length;
+          const computerWins = state.gameState.battleHistory.filter(b => b.winner === 'computer').length;
+          const finalWinner = playerWins > computerWins ? 'player' :
+            computerWins > playerWins ? 'computer' : 'tie';
+          
+          // 更新遊戲統計
+          const playerCards = state.gameState.battleHistory.map(b => ({ class: b.playerCard.class }));
+          StorageManager.updateGameStats(finalWinner, playerCards);
         } else {
           state.gameState.phase = 'playing';
         }
@@ -213,6 +230,8 @@ export const useGameStore = create<GameStore>()(
     updateSettings: (newSettings: Partial<GameSettings>) => {
       set((state) => {
         state.settings = { ...state.settings, ...newSettings };
+        // 儲存設定到本地儲存
+        StorageManager.saveSettings(state.settings);
       });
     },
 

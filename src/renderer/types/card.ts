@@ -14,6 +14,7 @@ export interface Card {
   class: CardClass;
   gender: Gender;
   imageUrl: string;
+  backImageUrl: string;
   name: string;
   description?: string;
 }
