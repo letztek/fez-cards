@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { Card as CardComponent } from './Card';
 import { FlipCard } from './FlipCard';
 import { Card as CardType, BattleResult } from '../types/card';
@@ -29,6 +30,7 @@ export const BattleAreaNew: React.FC<BattleAreaNewProps> = ({
   onComputerRevealComplete,
   pendingComputerCard
 }) => {
+  const { t } = useTranslation();
   const [computerFlipped, setComputerFlipped] = useState(false);
 
   // 控制電腦卡牌翻轉時機
@@ -121,13 +123,13 @@ export const BattleAreaNew: React.FC<BattleAreaNewProps> = ({
     if (!result) return '';
     switch (result.winner) {
       case 'player':
-        return '玩家獲勝！';
+        return t('battle.result.playerWins');
       case 'computer':
-        return '電腦獲勝！';
+        return t('battle.result.computerWins');
       case 'tie':
-        return '平手！';
+        return t('battle.result.tie');
       default:
-        return '未知結果';
+        return t('battle.result.tie');
     }
   };
 
@@ -140,15 +142,15 @@ export const BattleAreaNew: React.FC<BattleAreaNewProps> = ({
   const getPhaseDescription = () => {
     switch (battlePhase) {
       case 'waiting':
-        return '選擇一張卡牌開始對戰';
+        return t('battle.selectCardToStart', { defaultValue: '選擇一張卡牌開始對戰' });
       case 'player-selected':
-        return '點擊確認出牌按鈕';
+        return t('battle.clickConfirm', { defaultValue: '點擊確認出牌按鈕' });
       case 'computer-thinking':
-        return '電腦正在思考...';
+        return t('battle.computerThinking', { defaultValue: '電腦正在思考...' });
       case 'computer-reveal':
-        return '電腦正在翻牌...';
+        return t('battle.computerRevealing', { defaultValue: '電腦正在翻牌...' });
       case 'result':
-        return '對戰結束';
+        return t('battle.battleEnd', { defaultValue: '對戰結束' });
       default:
         return '';
     }
@@ -169,10 +171,10 @@ export const BattleAreaNew: React.FC<BattleAreaNewProps> = ({
     >
       {/* Battle Title */}
       <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold text-white mb-2">對戰區域</h2>
+        <h2 className="text-2xl font-bold text-white mb-2">{t('battle.battleArea', { defaultValue: '對戰區域' })}</h2>
         {result && (
           <div className="text-sm text-white/70">
-            第 {result.round} 回合
+            {t('game.round', { current: result.round, total: '' }).replace(/\s\/.*/, '')}
           </div>
         )}
         
@@ -186,7 +188,7 @@ export const BattleAreaNew: React.FC<BattleAreaNewProps> = ({
       <div className="flex items-center justify-center gap-8 mb-6">
         {/* Player Card */}
         <div className="text-center">
-          <div className="text-sm text-blue-400 mb-2 font-medium">玩家</div>
+          <div className="text-sm text-blue-400 mb-2 font-medium">{t('game.playerScore', { score: '' }).split(':')[0]}</div>
           <AnimatePresence mode="wait">
             {playerCard ? (
               <motion.div
@@ -247,7 +249,7 @@ export const BattleAreaNew: React.FC<BattleAreaNewProps> = ({
 
         {/* Computer Card - 使用 FlipCard */}
         <div className="text-center">
-          <div className="text-sm text-red-400 mb-2 font-medium">電腦</div>
+          <div className="text-sm text-red-400 mb-2 font-medium">{t('game.computerScore', { score: '' }).split(':')[0]}</div>
           <AnimatePresence mode="wait">
             {(computerCard || pendingComputerCard) ? (
               <motion.div
@@ -283,7 +285,7 @@ export const BattleAreaNew: React.FC<BattleAreaNewProps> = ({
                   >
                     🤖
                   </motion.div>
-                  <div className="text-xs">電腦思考中</div>
+                  <div className="text-xs">{t('battle.computerThinking', { defaultValue: '電腦思考中' })}</div>
                 </div>
               </motion.div>
             ) : (
@@ -335,7 +337,7 @@ export const BattleAreaNew: React.FC<BattleAreaNewProps> = ({
           transition={{ delay: 0.3 }}
         >
           <div className="text-4xl mb-2">⚔️</div>
-          <div>選擇一張卡牌開始對戰</div>
+          <div>{t('battle.selectCardToStart', { defaultValue: '選擇一張卡牌開始對戰' })}</div>
         </motion.div>
       )}
     </motion.div>

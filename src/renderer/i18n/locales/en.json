@@ -1,0 +1,117 @@
+{
+  "app": {
+    "title": "Fez Card Game",
+    "subtitle": "Turn-based Card Battle Game with Three Class Rock-Paper-Scissors"
+  },
+  "classes": {
+    "warrior": "Warrior",
+    "scout": "Scout",
+    "sorcerer": "Sorcerer"
+  },
+  "classDescription": {
+    "warrior": "Melee expert, specializes in physical attacks",
+    "scout": "Ranged shooter, agile and precise",
+    "sorcerer": "Magic user, masters elemental forces"
+  },
+  "classCounters": {
+    "warrior": "Counters Scout",
+    "scout": "Counters Sorcerer",
+    "sorcerer": "Counters Warrior"
+  },
+  "menu": {
+    "startGame": "Start Game",
+    "settings": "Game Settings",
+    "statistics": "Game Statistics",
+    "keyboardHelp": "Keyboard Shortcuts",
+    "ready": "Ready to Start"
+  },
+  "game": {
+    "round": "Round {{current}} / {{total}}",
+    "playerScore": "Player: {{score}} wins",
+    "computerScore": "Computer: {{score}} wins",
+    "selectCard": "Select Card",
+    "confirmBattle": "Confirm Battle",
+    "nextRound": "Next Round",
+    "backToMenu": "Back to Menu"
+  },
+  "battle": {
+    "result": {
+      "playerWins": "Player Wins!",
+      "computerWins": "Computer Wins!",
+      "tie": "Tie!"
+    },
+    "explanation": {
+      "warrior_vs_scout": "Warrior counters Scout",
+      "scout_vs_sorcerer": "Scout counters Sorcerer",
+      "sorcerer_vs_warrior": "Sorcerer counters Warrior",
+      "tie": "Same class results in tie"
+    },
+    "computerThinking": "Computer thinking...",
+    "computerRevealing": "Computer revealing...",
+    "battleEnd": "Battle ended",
+    "cardSelected": "Card selected",
+    "selectCardToStart": "Select a card to start battle",
+    "clickConfirm": "Click confirm to play card",
+    "battleArea": "Battle Area"
+  },
+  "result": {
+    "congratulations": "Congratulations!",
+    "defeat": "Defeat",
+    "tie": "Tie Game!",
+    "playAgain": "Play Again",
+    "backToMenu": "Back to Menu",
+    "playerWins": "{{wins}} wins",
+    "computerWins": "{{wins}} wins",
+    "ties": "{{ties}} ties"
+  },
+  "settings": {
+    "title": "Game Settings",
+    "language": "Language",
+    "rounds": "Rounds",
+    "aiDifficulty": "Computer Difficulty",
+    "theme": "Theme",
+    "save": "Save Settings",
+    "cancel": "Cancel",
+    "close": "Close"
+  },
+  "statistics": {
+    "title": "Game Statistics",
+    "totalGames": "Total Games",
+    "wins": "Wins",
+    "losses": "Losses",
+    "ties": "Ties",
+    "winRate": "Win Rate",
+    "favoriteClass": "Favorite Class",
+    "close": "Close"
+  },
+  "keyboard": {
+    "title": "Keyboard Shortcuts",
+    "selectCard": "Select Card",
+    "confirm": "Confirm",
+    "next": "Next Round",
+    "back": "Back/Cancel",
+    "close": "Close"
+  },
+  "difficulty": {
+    "easy": "Easy",
+    "normal": "Normal",
+    "hard": "Hard"
+  },
+  "loading": {
+    "title": "Loading card data...",
+    "pleaseWait": "Loading, please wait..."
+  },
+  "error": {
+    "title": "Loading Error",
+    "reload": "Reload"
+  },
+  "debug": {
+    "imageTest": "Image Test",
+    "gameDebug": "Game Debug",
+    "buttonTest": "Button Test",
+    "flipAnimation": "Flip Animation",
+    "simpleModal": "Simple Modal",
+    "debugInfo": "Debug Info"
+  },
+  "cardUnit": "cards"
+}

@@ -1,27 +1,70 @@
 import { Card, CardClass, Gender, CardSet } from '../types/card';
+import { imagePreloader } from './image-preloader';
+import i18n from '../i18n';
 
 export class CardLoader {
   private static readonly CARD_NAMES = {
-    [CardClass.WARRIOR]: {
-      [Gender.MALE]: ['勇敢戰士', '鋼鐵騎士', '守護者'],
-      [Gender.FEMALE]: ['女戰士', '盾牌少女', '戰場玫瑰']
+    zh: {
+      [CardClass.WARRIOR]: {
+        [Gender.MALE]: ['勇敢戰士', '鋼鐵騎士', '守護者'],
+        [Gender.FEMALE]: ['女戰士', '盾牌少女', '戰場玫瑰']
+      },
+      [CardClass.MAGE]: {
+        [Gender.MALE]: ['火焰法師', '冰霜術士', '雷電巫師'],
+        [Gender.FEMALE]: ['魔法少女', '星辰女巫', '治療師']
+      },
+      [CardClass.RANGER]: {
+        [Gender.MALE]: ['弓箭手', '獵人', '遊俠'],
+        [Gender.FEMALE]: ['精靈弓手', '女獵人', '森林守護者']
+      }
     },
-    [CardClass.MAGE]: {
-      [Gender.MALE]: ['火焰法師', '冰霜術士', '雷電巫師'],
-      [Gender.FEMALE]: ['魔法少女', '星辰女巫', '治療師']
+    en: {
+      [CardClass.WARRIOR]: {
+        [Gender.MALE]: ['Brave Warrior', 'Iron Knight', 'Guardian'],
+        [Gender.FEMALE]: ['Female Warrior', 'Shield Maiden', 'Battle Rose']
+      },
+      [CardClass.MAGE]: {
+        [Gender.MALE]: ['Fire Mage', 'Frost Caster', 'Lightning Wizard'],
+        [Gender.FEMALE]: ['Magic Girl', 'Star Witch', 'Healer']
+      },
+      [CardClass.RANGER]: {
+        [Gender.MALE]: ['Archer', 'Hunter', 'Ranger'],
+        [Gender.FEMALE]: ['Elven Archer', 'Huntress', 'Forest Guardian']
+      }
     },
-    [CardClass.RANGER]: {
-      [Gender.MALE]: ['弓箭手', '獵人', '遊俠'],
-      [Gender.FEMALE]: ['精靈弓手', '女獵人', '森林守護者']
+    ja: {
+      [CardClass.WARRIOR]: {
+        [Gender.MALE]: ['勇敢なウォリアー', '鋼鉄の騎士', '守護者'],
+        [Gender.FEMALE]: ['女戦士', 'シールドメイデン', 'バトルローズ']
+      },
+      [CardClass.MAGE]: {
+        [Gender.MALE]: ['ファイアメイジ', 'フロストキャスター', 'ライトニングウィザード'],
+        [Gender.FEMALE]: ['マジックガール', 'スターウィッチ', 'ヒーラー']
+      },
+      [CardClass.RANGER]: {
+        [Gender.MALE]: ['アーチャー', 'ハンター', 'レンジャー'],
+        [Gender.FEMALE]: ['エルフアーチャー', 'ハントレス', 'フォレストガーディアン']
+      }
     }
   };
+
+  private static getCardNames(language: string = 'zh') {
+    const lang = language in this.CARD_NAMES ? language as keyof typeof this.CARD_NAMES : 'zh';
+    return this.CARD_NAMES[lang];
+  }
 
   /**
    * 載入所有卡牌資料
    */
-  static async loadAllCards(): Promise<CardSet> {
+  static async loadAllCards(
+    onProgress?: (loaded: number, total: number) => void
+  ): Promise<CardSet> {
     try {
       const cardPaths = await this.getCardImagePaths();
+      
+      // 預載入所有卡牌圖片
+      await imagePreloader.preloadImagesBatch(cardPaths, onProgress);
+      
       const cards = cardPaths.map(path => this.parseCardFromPath(path));
       
       return {
@@ -133,7 +176,10 @@ export class CardLoader {
    * 獲取卡牌名稱
    */
   private static getCardName(cardClass: CardClass, gender: Gender, index: number): string {
-    const names = this.CARD_NAMES[cardClass][gender];
+    // 獲取當前i18n的語言設定
+    const currentLanguage = i18n.language || 'zh';
+    const cardNames = this.getCardNames(currentLanguage);
+    const names = cardNames[cardClass][gender];
     return names[index] || `${cardClass} ${gender} ${index + 1}`;
   }
 

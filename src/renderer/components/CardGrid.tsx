@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { Card as CardComponent } from './Card';
 import { Card as CardType } from '../types/card';
 
@@ -26,6 +27,7 @@ export const CardGrid: React.FC<CardGridProps> = ({
   className = '',
   title
 }) => {
+  const { t } = useTranslation();
   const getCardState = (card: CardType) => {
     if (disabledCardIds.includes(card.id)) return 'disabled';
     if (selectedCardId === card.id) return 'selected';
@@ -93,7 +95,7 @@ export const CardGrid: React.FC<CardGridProps> = ({
         <div className="text-center mb-4">
           <h3 className="text-lg font-semibold text-white/90">{title}</h3>
           <div className="text-sm text-white/60">
-            {cards.length} 張卡牌
+            {cards.length} {t('cardUnit', { defaultValue: '張卡牌' })}
           </div>
         </div>
       )}

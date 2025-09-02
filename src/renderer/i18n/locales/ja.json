@@ -1,0 +1,117 @@
+{
+  "app": {
+    "title": "Fez Card Game",
+    "subtitle": "三職業じゃんけん形式のターン制カードバトルゲーム"
+  },
+  "classes": {
+    "warrior": "ウォリアー",
+    "scout": "スカウト",
+    "sorcerer": "ソーサラー"
+  },
+  "classDescription": {
+    "warrior": "近接戦闘の専門家、物理攻撃が得意",
+    "scout": "遠距離射手、機敏で正確",
+    "sorcerer": "魔法使い、元素の力を操る"
+  },
+  "classCounters": {
+    "warrior": "スカウトに勝つ",
+    "scout": "ソーサラーに勝つ",
+    "sorcerer": "ウォリアーに勝つ"
+  },
+  "menu": {
+    "startGame": "ゲーム開始",
+    "settings": "ゲーム設定",
+    "statistics": "ゲーム統計",
+    "keyboardHelp": "キーボードショートカット",
+    "ready": "ゲーム開始の準備完了"
+  },
+  "game": {
+    "round": "ラウンド {{current}} / {{total}}",
+    "playerScore": "プレイヤー: {{score}} 勝",
+    "computerScore": "コンピューター: {{score}} 勝",
+    "selectCard": "カード選択",
+    "confirmBattle": "バトル確認",
+    "nextRound": "次のラウンド",
+    "backToMenu": "メニューに戻る"
+  },
+  "battle": {
+    "result": {
+      "playerWins": "プレイヤー勝利！",
+      "computerWins": "コンピューター勝利！",
+      "tie": "引き分け！"
+    },
+    "explanation": {
+      "warrior_vs_scout": "ウォリアーはスカウトに勝つ",
+      "scout_vs_sorcerer": "スカウトはソーサラーに勝つ",
+      "sorcerer_vs_warrior": "ソーサラーはウォリアーに勝つ",
+      "tie": "同じ職業は引き分け"
+    },
+    "computerThinking": "コンピューター思考中...",
+    "computerRevealing": "コンピューターフリップ中...",
+    "battleEnd": "バトル終了",
+    "cardSelected": "カードを選択済み",
+    "selectCardToStart": "カードを選んでバトル開始",
+    "clickConfirm": "確認ボタンでカードを出す",
+    "battleArea": "バトルエリア"
+  },
+  "result": {
+    "congratulations": "勝利おめでとうございます！",
+    "defeat": "残念、敗北",
+    "tie": "引き分け！",
+    "playAgain": "もう一度プレイ",
+    "backToMenu": "メニューに戻る",
+    "playerWins": "{{wins}} 勝",
+    "computerWins": "{{wins}} 勝",
+    "ties": "{{ties}} 引き分け"
+  },
+  "settings": {
+    "title": "ゲーム設定",
+    "language": "言語",
+    "rounds": "ラウンド数",
+    "aiDifficulty": "コンピューター難易度",
+    "theme": "テーマ",
+    "save": "設定を保存",
+    "cancel": "キャンセル",
+    "close": "閉じる"
+  },
+  "statistics": {
+    "title": "ゲーム統計",
+    "totalGames": "総ゲーム数",
+    "wins": "勝利",
+    "losses": "敗北",
+    "ties": "引き分け",
+    "winRate": "勝率",
+    "favoriteClass": "お気に入りクラス",
+    "close": "閉じる"
+  },
+  "keyboard": {
+    "title": "キーボードショートカット",
+    "selectCard": "カード選択",
+    "confirm": "確認",
+    "next": "次のラウンド",
+    "back": "戻る/キャンセル",
+    "close": "閉じる"
+  },
+  "difficulty": {
+    "easy": "簡単",
+    "normal": "普通",
+    "hard": "難しい"
+  },
+  "loading": {
+    "title": "カードデータを読み込み中...",
+    "pleaseWait": "読み込み中、お待ちください..."
+  },
+  "error": {
+    "title": "読み込みエラー",
+    "reload": "再読み込み"
+  },
+  "debug": {
+    "imageTest": "画像テスト",
+    "gameDebug": "ゲームデバッグ",
+    "buttonTest": "ボタンテスト",
+    "flipAnimation": "フリップアニメーション",
+    "simpleModal": "シンプルモーダル",
+    "debugInfo": "デバッグ情報"
+  },
+  "cardUnit": "枚のカード"
+}

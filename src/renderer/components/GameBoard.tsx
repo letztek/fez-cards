@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { CardGrid } from './CardGrid';
 import { BattleAreaNew } from './BattleAreaNew';
 import { Button } from './Button';
@@ -17,6 +18,7 @@ interface GameBoardProps {
   onCardSelect: (card: CardType) => void;
   onBattleConfirm: () => void;
   onNextRound: () => void;
+  onExitGame?: () => void;
   isProcessing?: boolean;
   className?: string;
   battlePhase?: 'waiting' | 'player-selected' | 'computer-thinking' | 'computer-reveal' | 'result';
@@ -36,12 +38,14 @@ export const GameBoard: React.FC<GameBoardProps> = ({
   onCardSelect,
   onBattleConfirm,
   onNextRound,
+  onExitGame,
   isProcessing = false,
   className = '',
   battlePhase = 'waiting',
   onComputerRevealComplete,
   pendingComputerCard
 }) => {
+  const { t } = useTranslation();
   const [isBattleAnimating, setIsBattleAnimating] = useState(false);
 
   const handleBattleConfirm = async () => {
@@ -68,30 +72,40 @@ export const GameBoard: React.FC<GameBoardProps> = ({
     <div className={`w-full h-full ${className}`}>
       {/* Game Header */}
       <motion.div
-        className="flex justify-between items-center p-4 bg-slate-800/50 backdrop-blur-sm rounded-lg mb-6"
+        className="relative flex justify-between items-center p-4 bg-slate-800/50 backdrop-blur-sm rounded-lg mb-6"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
+        {/* Exit Button */}
+        {onExitGame && (
+          <button
+            onClick={onExitGame}
+            className="absolute top-2 right-2 text-gray-400 hover:text-white text-xl transition-colors z-10"
+            title={t('game.backToMenu')}
+          >
+            ×
+          </button>
+        )}
         <div className="text-center">
-          <div className="text-sm text-blue-400">玩家</div>
+          <div className="text-sm text-blue-400">{t('game.playerScore', { score: '' }).split(':')[0]}</div>
           <div className="text-2xl font-bold text-white">{playerScore}</div>
-          <div className="text-xs text-white/60">{playerHand.length} 張卡牌</div>
+          <div className="text-xs text-white/60">{playerHand.length} {t('cards', { count: playerHand.length, defaultValue: '張卡牌' })}</div>
         </div>
 
         <div className="text-center">
           <div className="text-lg font-semibold text-white mb-1">
-            第 {currentRound} / {maxRounds} 回合
+            {t('game.round', { current: currentRound, total: maxRounds })}
           </div>
           <div className="text-sm text-white/70">
-            {battleResult ? '戰鬥結束' : selectedCard ? '已選擇卡牌' : '選擇卡牌出戰'}
+            {battleResult ? t('battle.battleEnd', { defaultValue: '戰鬥結束' }) : selectedCard ? t('battle.cardSelected', { defaultValue: '已選擇卡牌' }) : t('game.selectCard')}
           </div>
         </div>
 
         <div className="text-center">
-          <div className="text-sm text-red-400">電腦</div>
+          <div className="text-sm text-red-400">{t('game.computerScore', { score: '' }).split(':')[0]}</div>
           <div className="text-2xl font-bold text-white">{computerScore}</div>
-          <div className="text-xs text-white/60">{computerHand.length} 張卡牌</div>
+          <div className="text-xs text-white/60">{computerHand.length} {t('cards', { count: computerHand.length, defaultValue: '張卡牌' })}</div>
         </div>
       </motion.div>
 
@@ -105,7 +119,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
           transition={{ duration: 0.5 }}
         >
           <CardGrid
-            title="你的手牌"
+            title={t('game.selectCard')}
             cards={playerHand}
             onCardClick={onCardSelect}
             selectedCardId={selectedCard?.id}
@@ -144,7 +158,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
                 loading={isProcessing}
                 disabled={!canBattle}
               >
-                確認出牌
+                {t('game.confirmBattle')}
               </Button>
             )}
 
@@ -154,7 +168,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
                 variant="success"
                 disabled={!canContinue}
               >
-                下一回合
+                {t('game.nextRound')}
               </Button>
             )}
           </div>
@@ -168,7 +182,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
           transition={{ duration: 0.5, delay: 0.4 }}
         >
           <CardGrid
-            title="電腦手牌"
+            title={t('game.computerScore', { score: '' }).split(':')[0]}
             cards={computerHand}
             showBacks={true}
             cardSize="medium"
@@ -187,7 +201,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
           transition={{ duration: 0.5 }}
         >
           <CardGrid
-            title="電腦手牌"
+            title={t('game.computerScore', { score: '' }).split(':')[0]}
             cards={computerHand}
             showBacks={true}
             cardSize="small"
@@ -223,7 +237,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
                 disabled={!canBattle}
                 size="large"
               >
-                確認出牌
+                {t('game.confirmBattle')}
               </Button>
             )}
 
@@ -234,7 +248,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
                 disabled={!canContinue}
                 size="large"
               >
-                下一回合
+                {t('game.nextRound')}
               </Button>
             )}
           </div>
@@ -247,7 +261,7 @@ export const GameBoard: React.FC<GameBoardProps> = ({
           transition={{ duration: 0.5, delay: 0.4 }}
         >
           <CardGrid
-            title="你的手牌"
+            title={t('game.selectCard')}
             cards={playerHand}
             onCardClick={onCardSelect}
             selectedCardId={selectedCard?.id}

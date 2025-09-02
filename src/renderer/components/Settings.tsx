@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { useGameStore } from '../stores/game-store';
 import { Button } from './Button';
 
@@ -8,6 +9,7 @@ interface SettingsProps {
 }
 
 export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
+  const { t, i18n } = useTranslation();
   const { settings, updateSettings } = useGameStore();
 
   const handleMaxRoundsChange = (rounds: number) => {
@@ -20,6 +22,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
 
   const handleLanguageChange = (language: 'zh' | 'en' | 'ja') => {
     updateSettings({ language });
+    i18n.changeLanguage(language);
   };
 
   const handleThemeChange = (theme: 'dark' | 'light') => {
@@ -40,7 +43,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
         exit={{ scale: 0.9, opacity: 0 }}
       >
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-white">遊戲設定</h2>
+          <h2 className="text-2xl font-bold text-white">{t('settings.title')}</h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-white text-2xl"
@@ -53,10 +56,10 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
           {/* 回合數設定 */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              回合數
+              {t('settings.rounds')}
             </label>
-            <div className="grid grid-cols-3 gap-2">
-              {[3, 6, 9].map((rounds) => (
+            <div className="grid grid-cols-2 gap-2">
+              {[3, 6].map((rounds) => (
                 <button
                   key={rounds}
                   onClick={() => handleMaxRoundsChange(rounds)}
@@ -66,7 +69,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
                       : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
                   }`}
                 >
-                  {rounds} 回合
+                  {rounds} {t('settings.rounds')}
                 </button>
               ))}
             </div>
@@ -75,14 +78,14 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
           {/* 電腦難度設定 */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              電腦難度
+              {t('settings.aiDifficulty')}
             </label>
             <div className="grid grid-cols-3 gap-2">
               {[
-                { value: 'easy', label: '簡單' },
-                { value: 'normal', label: '普通' },
-                { value: 'hard', label: '困難' }
-              ].map(({ value, label }) => (
+                { value: 'easy' },
+                { value: 'normal' },
+                { value: 'hard' }
+              ].map(({ value }) => (
                 <button
                   key={value}
                   onClick={() => handleAIDifficultyChange(value as any)}
@@ -92,7 +95,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
                       : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
                   }`}
                 >
-                  {label}
+                  {t(`difficulty.${value}`)}
                 </button>
               ))}
             </div>
@@ -101,7 +104,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
           {/* 語言設定 */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              語言
+              {t('settings.language')}
             </label>
             <div className="grid grid-cols-3 gap-2">
               {[
@@ -127,7 +130,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
           {/* 主題設定 */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              主題
+              {t('settings.theme')}
             </label>
             <div className="grid grid-cols-2 gap-2">
               {[
@@ -152,7 +155,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
 
         <div className="mt-8 flex justify-end space-x-3">
           <Button onClick={onClose} variant="secondary">
-            關閉
+            {t('settings.close')}
           </Button>
         </div>
       </motion.div>

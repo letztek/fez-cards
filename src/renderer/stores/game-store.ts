@@ -70,16 +70,16 @@ export const useGameStore = create<GameStore>()(
       });
 
       try {
-        const cardSet = await CardLoader.loadAllCards();
+        const cardSet = await CardLoader.loadAllCards((loaded, total) => {
+          // 可以在這裡更新載入進度，但目前先簡化
+          console.log(`Loading cards: ${loaded}/${total}`);
+        });
         const cardManager = new CardManager(cardSet);
 
         // Validate card set
         if (!cardManager.validateCardSet()) {
           throw new Error('Invalid card set configuration');
         }
-
-        // Preload card images
-        await CardLoader.preloadCardImages(cardManager.getAllCards());
 
         set((state) => {
           state.cardSet = cardSet;
@@ -229,6 +229,12 @@ export const useGameStore = create<GameStore>()(
     // Update game settings
     updateSettings: (newSettings: Partial<GameSettings>) => {
       set((state) => {
+        // 驗證回合數不能超過手牌數（每人6張卡牌）
+        if (newSettings.maxRounds && newSettings.maxRounds > 6) {
+          console.warn('Maximum rounds cannot exceed 6 (hand size limit)');
+          newSettings.maxRounds = 6;
+        }
+        
         state.settings = { ...state.settings, ...newSettings };
         // 儲存設定到本地儲存
         StorageManager.saveSettings(state.settings);

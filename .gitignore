@@ -13,6 +13,7 @@ out/
 release/
 app/dist/
 app/build/
+dist-packages/
 
 # Environment variables
 .env

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { useGameStore } from '../stores/game-store';
 import { GameBoard } from '../components/GameBoard';
 import { Button } from '../components/Button';
@@ -19,6 +20,7 @@ import { useGameKeyboard } from '../hooks/useKeyboard';
 
 
 function App() {
+  const { t, i18n } = useTranslation();
   const {
     gameState,
     settings,
@@ -51,6 +53,13 @@ function App() {
     console.log('App mounted, initializing game...');
     initializeGame();
   }, [initializeGame]);
+
+  // 同步語言設定
+  useEffect(() => {
+    if (settings.language !== i18n.language) {
+      i18n.changeLanguage(settings.language);
+    }
+  }, [settings.language, i18n]);
 
   const handleStartGame = () => {
     clearError();
@@ -182,7 +191,7 @@ function App() {
             onClick={() => setShowImageTest(false)}
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
           >
-            返回遊戲
+            {t('game.backToMenu')}
           </button>
         </div>
         <SimpleImageTest />
@@ -199,7 +208,7 @@ function App() {
             onClick={() => setShowGameDebug(false)}
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
           >
-            返回遊戲
+            {t('game.backToMenu')}
           </button>
         </div>
         <GameDebug />
@@ -216,7 +225,7 @@ function App() {
             onClick={() => setShowButtonTest(false)}
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
           >
-            返回遊戲
+            {t('game.backToMenu')}
           </button>
         </div>
         <ButtonTest />
@@ -233,7 +242,7 @@ function App() {
             onClick={() => setShowFlipCardTest(false)}
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
           >
-            返回遊戲
+            {t('game.backToMenu')}
           </button>
         </div>
         <FlipCardTest />
@@ -248,25 +257,25 @@ function App() {
         onClick={() => setShowImageTest(true)}
         className="block bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm"
       >
-        圖片測試
+        {t('debug.imageTest')}
       </button>
       <button
         onClick={() => setShowGameDebug(true)}
         className="block bg-orange-600 hover:bg-orange-700 text-white px-3 py-1 rounded text-sm"
       >
-        遊戲除錯
+        {t('debug.gameDebug')}
       </button>
       <button
         onClick={() => setShowButtonTest(true)}
         className="block bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm"
       >
-        按鈕測試
+        {t('debug.buttonTest')}
       </button>
       <button
         onClick={() => setShowFlipCardTest(true)}
         className="block bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm"
       >
-        翻轉動畫
+        {t('debug.flipAnimation')}
       </button>
       <button
         onClick={() => {
@@ -275,7 +284,7 @@ function App() {
         }}
         className="block bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm"
       >
-        簡單模態
+        {t('debug.simpleModal')}
       </button>
       <button
         onClick={() => {
@@ -288,7 +297,7 @@ function App() {
         }}
         className="block bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm"
       >
-        除錯資訊
+        {t('debug.debugInfo')}
       </button>
     </div>
   );
@@ -311,8 +320,8 @@ function App() {
             >
               🎴
             </motion.div>
-            <h2 className="text-2xl font-bold mb-2">Fez Card Game</h2>
-            <p className="text-slate-400">正在載入卡牌資料...</p>
+            <h2 className="text-2xl font-bold mb-2">{t('app.title')}</h2>
+            <p className="text-slate-400">{t('loading.title')}</p>
           </div>
           
           <div className="w-64 bg-slate-700 rounded-full h-2 mx-auto">
@@ -325,7 +334,7 @@ function App() {
           </div>
           
           <div className="mt-4 text-sm text-slate-500">
-            載入中，請稍候...
+            {t('loading.pleaseWait')}
           </div>
         </motion.div>
       </div>
@@ -338,10 +347,10 @@ function App() {
       <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white flex items-center justify-center">
         <div className="text-center">
           <div className="text-red-400 text-4xl mb-4">❌</div>
-          <h2 className="text-xl font-bold text-red-400 mb-2">載入錯誤</h2>
+          <h2 className="text-xl font-bold text-red-400 mb-2">{t('error.title')}</h2>
           <p className="text-gray-300 mb-4 max-w-md">{error}</p>
           <Button onClick={() => { clearError(); initializeGame(); }} variant="primary">
-            重新載入
+            {t('error.reload')}
           </Button>
         </div>
       </div>
@@ -361,10 +370,10 @@ function App() {
             transition={{ duration: 0.6 }}
           >
             <h1 className="text-6xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-              Fez Card Game
+              {t('app.title')}
             </h1>
             <p className="text-slate-400 text-lg">
-              三職業相剋的回合制卡牌對戰遊戲
+              {t('app.subtitle')}
             </p>
           </motion.header>
 
@@ -376,36 +385,36 @@ function App() {
           >
             <div className="text-center">
               <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg p-8 shadow-xl max-w-md">
-                <h2 className="text-2xl font-semibold mb-6">準備開始遊戲</h2>
+                <h2 className="text-2xl font-semibold mb-6">{t('menu.ready')}</h2>
 
                 <div className="grid grid-cols-3 gap-4 text-sm mb-8">
                   <motion.div
                     className="bg-red-900/30 p-3 rounded border border-red-500/30"
                     whileHover={{ scale: 1.05 }}
                   >
-                    <div className="text-red-300 font-medium">⚔️ 戰士</div>
-                    <div className="text-xs text-slate-400 mt-1">克制遊俠</div>
+                    <div className="text-red-300 font-medium">⚔️ {t('classes.warrior')}</div>
+                    <div className="text-xs text-slate-400 mt-1">{t('classCounters.warrior')}</div>
                   </motion.div>
                   <motion.div
                     className="bg-blue-900/30 p-3 rounded border border-blue-500/30"
                     whileHover={{ scale: 1.05 }}
                   >
-                    <div className="text-blue-300 font-medium">🔮 法師</div>
-                    <div className="text-xs text-slate-400 mt-1">克制戰士</div>
+                    <div className="text-blue-300 font-medium">🔮 {t('classes.sorcerer')}</div>
+                    <div className="text-xs text-slate-400 mt-1">{t('classCounters.sorcerer')}</div>
                   </motion.div>
                   <motion.div
                     className="bg-green-900/30 p-3 rounded border border-green-500/30"
                     whileHover={{ scale: 1.05 }}
                   >
-                    <div className="text-green-300 font-medium">🏹 遊俠</div>
-                    <div className="text-xs text-slate-400 mt-1">克制法師</div>
+                    <div className="text-green-300 font-medium">🏹 {t('classes.scout')}</div>
+                    <div className="text-xs text-slate-400 mt-1">{t('classCounters.scout')}</div>
                   </motion.div>
                 </div>
 
                 <div className="text-sm text-slate-300 mb-6">
-                  <div className="mb-2">遊戲設定</div>
+                  <div className="mb-2">{t('settings.title')}</div>
                   <div className="text-xs text-slate-400">
-                    回合數: {settings.maxRounds} | 難度: {settings.aiDifficulty}
+                    {t('settings.rounds')}: {settings.maxRounds} | {t('settings.aiDifficulty')}: {t(`difficulty.${settings.aiDifficulty}`)}
                   </div>
                 </div>
 
@@ -416,7 +425,7 @@ function App() {
                     size="large"
                     className="w-full"
                   >
-                    開始遊戲
+                    {t('menu.startGame')}
                   </Button>
                   <Button
                     onClick={() => {
@@ -426,7 +435,7 @@ function App() {
                     variant="secondary"
                     className="w-full"
                   >
-                    遊戲設定 (簡單測試)
+                    {t('menu.settings')}
                   </Button>
                   <Button
                     onClick={() => {
@@ -436,7 +445,7 @@ function App() {
                     variant="secondary"
                     className="w-full"
                   >
-                    遊戲統計 (簡單測試)
+                    {t('menu.statistics')}
                   </Button>
                   <Button
                     onClick={() => {
@@ -446,7 +455,7 @@ function App() {
                     variant="secondary"
                     className="w-full text-sm"
                   >
-                    ⌨️ 快捷鍵說明 (簡單測試)
+                    ⌨️ {t('menu.keyboardHelp')}
                   </Button>
                 </div>
               </div>
@@ -503,22 +512,22 @@ function App() {
             </div>
 
             <h2 className="text-2xl font-bold mb-4">
-              {finalWinner === 'player' ? '恭喜獲勝！' :
-                finalWinner === 'computer' ? '很遺憾敗北' : '平手！'}
+              {finalWinner === 'player' ? t('result.congratulations') :
+                finalWinner === 'computer' ? t('result.defeat') : t('result.tie')}
             </h2>
 
             <div className="text-lg mb-6">
               <div className="flex justify-between items-center mb-2">
-                <span>玩家</span>
-                <span className="font-bold text-blue-400">{playerWins} 勝</span>
+                <span>{t('game.playerScore', { score: '' }).split(':')[0]}</span>
+                <span className="font-bold text-blue-400">{t('result.playerWins', { wins: playerWins })}</span>
               </div>
               <div className="flex justify-between items-center mb-2">
-                <span>電腦</span>
-                <span className="font-bold text-red-400">{computerWins} 勝</span>
+                <span>{t('game.computerScore', { score: '' }).split(':')[0]}</span>
+                <span className="font-bold text-red-400">{t('result.computerWins', { wins: computerWins })}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span>平手</span>
-                <span className="font-bold text-yellow-400">{ties} 場</span>
+                <span>{t('statistics.ties')}</span>
+                <span className="font-bold text-yellow-400">{t('result.ties', { ties })}</span>
               </div>
             </div>
 
@@ -529,14 +538,14 @@ function App() {
                 size="large"
                 className="w-full"
               >
-                再玩一局
+                {t('result.playAgain')}
               </Button>
               <Button
                 onClick={handleResetGame}
                 variant="secondary"
                 className="w-full"
               >
-                返回主選單
+                {t('result.backToMenu')}
               </Button>
             </div>
           </div>
@@ -563,6 +572,7 @@ function App() {
             onCardSelect={handleCardSelect}
             onBattleConfirm={handleBattleConfirm}
             onNextRound={handleNextRound}
+            onExitGame={handleResetGame}
             isProcessing={isProcessing}
             battlePhase={battlePhase}
             onComputerRevealComplete={handleComputerRevealComplete}
