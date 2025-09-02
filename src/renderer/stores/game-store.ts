@@ -162,7 +162,7 @@ export const useGameStore = create<GameStore>()(
         throw new Error('Player card not found');
       }
 
-      // AI selects a card if not provided
+      // 電腦選擇卡牌 (如果未提供)
       const aiCard = computerCard || cardManager.selectRandomFromCards(gameState.computerHand);
 
       // Resolve battle

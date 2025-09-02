@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { CardGrid } from './CardGrid';
-import { BattleArea } from './BattleArea';
+import { BattleAreaNew } from './BattleAreaNew';
 import { Button } from './Button';
 import { Card as CardType, BattleResult } from '../types/card';
 
@@ -19,6 +19,9 @@ interface GameBoardProps {
   onNextRound: () => void;
   isProcessing?: boolean;
   className?: string;
+  battlePhase?: 'waiting' | 'player-selected' | 'computer-thinking' | 'computer-reveal' | 'result';
+  onComputerRevealComplete?: () => void;
+  pendingComputerCard?: CardType;
 }
 
 export const GameBoard: React.FC<GameBoardProps> = ({
@@ -34,7 +37,10 @@ export const GameBoard: React.FC<GameBoardProps> = ({
   onBattleConfirm,
   onNextRound,
   isProcessing = false,
-  className = ''
+  className = '',
+  battlePhase = 'waiting',
+  onComputerRevealComplete,
+  pendingComputerCard
 }) => {
   const [isBattleAnimating, setIsBattleAnimating] = useState(false);
 
@@ -117,12 +123,15 @@ export const GameBoard: React.FC<GameBoardProps> = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <BattleArea
+          <BattleAreaNew
             playerCard={selectedCard}
             computerCard={battleResult?.computerCard}
             result={battleResult}
             isAnimating={isBattleAnimating}
             onAnimationComplete={() => setIsBattleAnimating(false)}
+            battlePhase={battlePhase}
+            onComputerRevealComplete={onComputerRevealComplete}
+            pendingComputerCard={pendingComputerCard}
             className="mb-4"
           />
 
@@ -192,12 +201,15 @@ export const GameBoard: React.FC<GameBoardProps> = ({
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <BattleArea
+          <BattleAreaNew
             playerCard={selectedCard}
             computerCard={battleResult?.computerCard}
             result={battleResult}
             isAnimating={isBattleAnimating}
             onAnimationComplete={() => setIsBattleAnimating(false)}
+            battlePhase={battlePhase}
+            onComputerRevealComplete={onComputerRevealComplete}
+            pendingComputerCard={pendingComputerCard}
             className="mb-4"
           />
 

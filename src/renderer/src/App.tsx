@@ -11,6 +11,7 @@ import { GameDebug } from './GameDebug';
 import { ButtonTest } from './ButtonTest';
 import { TestModal } from './TestModal';
 import { SimpleModal } from './SimpleModal';
+import { FlipCardTest } from './FlipCardTest';
 import { Settings } from '../components/Settings';
 import { Statistics } from '../components/Statistics';
 import { KeyboardHelp } from '../components/KeyboardHelp';
@@ -34,9 +35,12 @@ function App() {
 
   const [currentBattleResult, setCurrentBattleResult] = useState<BattleResult | undefined>();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [battlePhase, setBattlePhase] = useState<'waiting' | 'player-selected' | 'computer-thinking' | 'computer-reveal' | 'result'>('waiting');
+  const [computerCard, setComputerCard] = useState<any>(null);
   const [showImageTest, setShowImageTest] = useState(false);
   const [showGameDebug, setShowGameDebug] = useState(false);
   const [showButtonTest, setShowButtonTest] = useState(false);
+  const [showFlipCardTest, setShowFlipCardTest] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showStatistics, setShowStatistics] = useState(false);
   const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
@@ -54,15 +58,27 @@ function App() {
   };
 
   const handleCardSelect = (card: any) => {
+    console.log('🃏 玩家選擇卡牌:', card.name);
     selectCard(card.id);
+    setBattlePhase('player-selected');
+    // 清除之前的對戰結果和電腦卡牌
+    setCurrentBattleResult(undefined);
+    setComputerCard(null);
   };
 
   const handleBattleConfirm = async () => {
     if (!gameState.selectedCard) return;
 
+    console.log('⚔️ 開始對戰流程');
     setIsProcessing(true);
+    setBattlePhase('computer-thinking');
+
     try {
-      // AI selects a card
+      // 階段 1: 電腦思考 (模擬思考時間)
+      console.log('🤖 電腦思考中...');
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // 階段 2: 電腦選擇卡牌
       const ai = AIFactory.createAI(settings.aiDifficulty);
       const aiCard = ai.selectCard(gameState.computerHand, {
         playerPreviousCards: gameState.battleHistory.map(b => b.playerCard),
@@ -71,11 +87,33 @@ function App() {
         computerScore: gameState.computerScore
       });
 
-      // Play the round
-      const result = await playRound(gameState.selectedCard.id, aiCard);
-      setCurrentBattleResult(result);
+      console.log('🎴 電腦選擇卡牌:', aiCard.name);
+      setComputerCard(aiCard);
+      
+      // 階段 3: 開始電腦翻牌動畫
+      setBattlePhase('computer-reveal');
+      
     } catch (err) {
       console.error('Battle error:', err);
+      setIsProcessing(false);
+      setBattlePhase('waiting');
+    }
+  };
+
+  // 處理電腦翻牌完成
+  const handleComputerRevealComplete = async () => {
+    console.log('✨ 電腦翻牌動畫完成，開始計算結果');
+    
+    try {
+      // 計算對戰結果
+      const result = await playRound(gameState.selectedCard!.id, computerCard);
+      setCurrentBattleResult(result);
+      
+      // 進入結果階段
+      setBattlePhase('result');
+      
+    } catch (err) {
+      console.error('Battle calculation error:', err);
     } finally {
       setIsProcessing(false);
     }
@@ -85,11 +123,15 @@ function App() {
     if (currentBattleResult) {
       completeRound(currentBattleResult);
       setCurrentBattleResult(undefined);
+      setComputerCard(null);
+      setBattlePhase('waiting');
     }
   };
 
   const handleResetGame = () => {
     setCurrentBattleResult(undefined);
+    setBattlePhase('waiting');
+    setComputerCard(null);
     resetGame();
   };
 
@@ -182,6 +224,23 @@ function App() {
     );
   }
 
+  // 顯示翻轉卡片測試頁面
+  if (showFlipCardTest) {
+    return (
+      <div>
+        <div className="fixed top-4 right-4 z-50">
+          <button
+            onClick={() => setShowFlipCardTest(false)}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+          >
+            返回遊戲
+          </button>
+        </div>
+        <FlipCardTest />
+      </div>
+    );
+  }
+
   // 除錯按鈕
   const debugButton = (
     <div className="fixed top-4 left-4 z-50 space-y-2">
@@ -202,6 +261,12 @@ function App() {
         className="block bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm"
       >
         按鈕測試
+      </button>
+      <button
+        onClick={() => setShowFlipCardTest(true)}
+        className="block bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm"
+      >
+        翻轉動畫
       </button>
       <button
         onClick={() => {
@@ -499,6 +564,9 @@ function App() {
             onBattleConfirm={handleBattleConfirm}
             onNextRound={handleNextRound}
             isProcessing={isProcessing}
+            battlePhase={battlePhase}
+            onComputerRevealComplete={handleComputerRevealComplete}
+            pendingComputerCard={computerCard}
           />
         </div>
         

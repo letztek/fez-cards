@@ -1,25 +1,46 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card as CardComponent } from './Card';
+import { FlipCard } from './FlipCard';
 import { Card as CardType, BattleResult } from '../types/card';
 
-interface BattleAreaProps {
+interface BattleAreaNewProps {
   playerCard?: CardType;
   computerCard?: CardType;
   result?: BattleResult;
   isAnimating?: boolean;
   onAnimationComplete?: () => void;
   className?: string;
+  // 新增的 props 用於控制翻牌流程
+  battlePhase?: 'waiting' | 'player-selected' | 'computer-thinking' | 'computer-reveal' | 'result';
+  onComputerRevealComplete?: () => void;
+  // 待翻轉的電腦卡牌（在 computer-reveal 階段使用）
+  pendingComputerCard?: CardType;
 }
 
-export const BattleArea: React.FC<BattleAreaProps> = ({
+export const BattleAreaNew: React.FC<BattleAreaNewProps> = ({
   playerCard,
   computerCard,
   result,
   isAnimating = false,
   onAnimationComplete,
-  className = ''
+  className = '',
+  battlePhase = 'waiting',
+  onComputerRevealComplete,
+  pendingComputerCard
 }) => {
+  const [computerFlipped, setComputerFlipped] = useState(false);
+
+  // 控制電腦卡牌翻轉時機
+  useEffect(() => {
+    console.log('🎬 BattleArea - 對戰階段變更:', battlePhase);
+    
+    if (battlePhase === 'waiting') {
+      // 重置翻轉狀態
+      setComputerFlipped(false);
+    }
+  }, [battlePhase]);
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { 
@@ -63,7 +84,7 @@ export const BattleArea: React.FC<BattleAreaProps> = ({
         type: 'spring',
         stiffness: 400,
         damping: 25,
-        delay: 0.5
+        delay: 0.3
       }
     }
   };
@@ -110,6 +131,29 @@ export const BattleArea: React.FC<BattleAreaProps> = ({
     }
   };
 
+  const handleComputerFlipComplete = () => {
+    console.log('✨ 電腦卡牌翻轉動畫完成');
+    setComputerFlipped(true); // 確保翻轉狀態正確
+    onComputerRevealComplete?.();
+  };
+
+  const getPhaseDescription = () => {
+    switch (battlePhase) {
+      case 'waiting':
+        return '選擇一張卡牌開始對戰';
+      case 'player-selected':
+        return '點擊確認出牌按鈕';
+      case 'computer-thinking':
+        return '電腦正在思考...';
+      case 'computer-reveal':
+        return '電腦正在翻牌...';
+      case 'result':
+        return '對戰結束';
+      default:
+        return '';
+    }
+  };
+
   return (
     <motion.div
       className={`
@@ -131,6 +175,11 @@ export const BattleArea: React.FC<BattleAreaProps> = ({
             第 {result.round} 回合
           </div>
         )}
+        
+        {/* Phase Indicator */}
+        <div className="text-xs text-white/50 mt-2">
+          {getPhaseDescription()}
+        </div>
       </div>
 
       {/* Battle Cards */}
@@ -196,23 +245,46 @@ export const BattleArea: React.FC<BattleAreaProps> = ({
           )}
         </motion.div>
 
-        {/* Computer Card */}
+        {/* Computer Card - 使用 FlipCard */}
         <div className="text-center">
           <div className="text-sm text-red-400 mb-2 font-medium">電腦</div>
           <AnimatePresence mode="wait">
-            {computerCard ? (
+            {(computerCard || pendingComputerCard) ? (
               <motion.div
-                key={`computer-${computerCard.id}`}
+                key={`computer-${(computerCard || pendingComputerCard)?.id}`}
                 variants={cardVariants}
                 initial="hidden"
                 animate={isAnimating ? 'battle' : 'visible'}
                 exit="hidden"
               >
-                <CardComponent
-                  card={computerCard}
+                {/* 使用 FlipCard 組件 */}
+                <FlipCard
+                  key={`${(computerCard || pendingComputerCard)?.id}`}
+                  card={computerCard || pendingComputerCard!}
                   size="medium"
-                  state={isAnimating ? 'playing' : 'idle'}
+                  isFlipped={computerFlipped}
+                  autoFlip={battlePhase === 'computer-reveal'}
+                  flipDelay={500}
+                  onFlipComplete={handleComputerFlipComplete}
                 />
+              </motion.div>
+            ) : battlePhase === 'computer-thinking' ? (
+              <motion.div
+                className="w-32 h-44 bg-slate-700/50 border-2 border-dashed border-slate-600 rounded-lg flex items-center justify-center"
+                variants={cardVariants}
+                initial="hidden"
+                animate="visible"
+              >
+                <div className="text-slate-500 text-center">
+                  <motion.div 
+                    className="text-2xl mb-1"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                  >
+                    🤖
+                  </motion.div>
+                  <div className="text-xs">電腦思考中</div>
+                </div>
               </motion.div>
             ) : (
               <motion.div
@@ -223,7 +295,7 @@ export const BattleArea: React.FC<BattleAreaProps> = ({
               >
                 <div className="text-slate-500 text-center">
                   <div className="text-2xl mb-1">🤖</div>
-                  <div className="text-xs">電腦思考中</div>
+                  <div className="text-xs">等待中</div>
                 </div>
               </motion.div>
             )}
@@ -233,7 +305,7 @@ export const BattleArea: React.FC<BattleAreaProps> = ({
 
       {/* Battle Result */}
       <AnimatePresence>
-        {result && (
+        {result && battlePhase === 'result' && (
           <motion.div
             className={`
               text-center p-4 rounded-lg border-2 bg-black/30 backdrop-blur-sm
@@ -255,7 +327,7 @@ export const BattleArea: React.FC<BattleAreaProps> = ({
       </AnimatePresence>
 
       {/* Empty State */}
-      {!playerCard && !computerCard && !result && (
+      {!playerCard && !computerCard && !result && battlePhase === 'waiting' && (
         <motion.div
           className="text-center text-white/60"
           initial={{ opacity: 0, y: 20 }}

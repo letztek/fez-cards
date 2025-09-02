@@ -2,7 +2,7 @@ import { Card, CardClass, AIStrategy, GameContext } from '../types/card';
 import { BattleEngine } from './battle-engine';
 
 /**
- * 簡單 AI 策略 - 隨機選擇
+ * 簡單電腦策略 - 隨機選擇
  */
 export class EasyAI implements AIStrategy {
   difficulty: 'easy' = 'easy';
@@ -15,7 +15,7 @@ export class EasyAI implements AIStrategy {
 }
 
 /**
- * 普通 AI 策略 - 基礎策略選擇
+ * 普通電腦策略 - 基礎策略選擇
  */
 export class NormalAI implements AIStrategy {
   difficulty: 'normal' = 'normal';
@@ -58,7 +58,7 @@ export class NormalAI implements AIStrategy {
     if (counterClass) {
       const counterCard = availableCards.find(card => card.class === counterClass);
       if (counterCard) {
-        console.log(`AI Normal: 選擇 ${counterCard.class} 克制玩家常用的 ${mostUsedClass}`);
+        console.log(`電腦 (普通): 選擇 ${counterCard.class} 克制玩家常用的 ${mostUsedClass}`);
         return counterCard;
       }
     }
@@ -89,38 +89,50 @@ export class NormalAI implements AIStrategy {
 }
 
 /**
- * 困難 AI 策略 - 進階策略選擇
+ * 困難電腦策略 - 進階策略選擇
  */
 export class HardAI implements AIStrategy {
   difficulty: 'hard' = 'hard';
 
   selectCard(availableCards: Card[], gameContext: GameContext): Card {
+    console.log('🔥 電腦 (困難) 開始分析局面...');
+    console.log(`當前回合: ${gameContext.currentRound}, 分數 - 玩家:${gameContext.playerScore} vs 電腦:${gameContext.computerScore}`);
+    console.log(`可用卡牌: [${availableCards.map(c => c.class).join(', ')}]`);
+    console.log(`玩家歷史: [${gameContext.playerPreviousCards.map(c => c.class).join(', ')}]`);
+
     // 進階策略：結合多種因素決策
     const strategicCard = this.advancedStrategy(availableCards, gameContext);
     if (strategicCard) {
+      console.log(`✅ 電腦 (困難) 選擇策略卡牌: ${strategicCard.class} (${strategicCard.name})`);
       return strategicCard;
     }
 
     // 後備策略
-    return this.selectOptimalCard(availableCards, gameContext);
+    const optimalCard = this.selectOptimalCard(availableCards, gameContext);
+    console.log(`⚖️ 電腦 (困難) 使用後備策略，選擇: ${optimalCard.class} (${optimalCard.name})`);
+    return optimalCard;
   }
 
   private advancedStrategy(availableCards: Card[], gameContext: GameContext): Card | null {
     // 如果接近遊戲結束，使用保守策略
     if (gameContext.currentRound >= 5) {
+      console.log('🎯 進入終盤策略模式');
       return this.endgameStrategy(availableCards, gameContext);
     }
 
     // 如果落後，使用激進策略
     if (gameContext.playerScore > gameContext.computerScore + 1) {
+      console.log('⚡ 檢測到落後，啟動激進策略');
       return this.aggressiveStrategy(availableCards, gameContext);
     }
 
     // 如果領先，使用防守策略
     if (gameContext.computerScore > gameContext.playerScore) {
+      console.log('🛡️ 檢測到領先，啟動防守策略');
       return this.defensiveStrategy(availableCards, gameContext);
     }
 
+    console.log('📊 局面均勢，使用標準策略');
     return null;
   }
 
@@ -138,7 +150,7 @@ export class HardAI implements AIStrategy {
         if (counterClass) {
           const counterCard = availableCards.find(card => card.class === counterClass);
           if (counterCard) {
-            console.log(`AI Hard (Endgame): 預測玩家出 ${predictedClass}，選擇 ${counterCard.class} 克制`);
+            console.log(`電腦 (困難/終盤): 預測玩家出 ${predictedClass}，選擇 ${counterCard.class} 克制`);
             return counterCard;
           }
         }
@@ -158,7 +170,7 @@ export class HardAI implements AIStrategy {
       if (counterClass) {
         const counterCards = availableCards.filter(card => card.class === counterClass);
         if (counterCards.length > 0) {
-          console.log(`AI Hard (Aggressive): 選擇 ${counterClass} 克制玩家常用的 ${playerClass}`);
+          console.log(`電腦 (困難/激進): 選擇 ${counterClass} 克制玩家常用的 ${playerClass}`);
           return counterCards[0];
         }
       }
@@ -180,7 +192,7 @@ export class HardAI implements AIStrategy {
       const safeCards = availableCards.filter(card => !dangerousClasses.includes(card.class));
       
       if (safeCards.length > 0) {
-        console.log(`AI Hard (Defensive): 避免被克制，選擇安全卡牌`);
+        console.log(`電腦 (困難/防守): 避免被克制，選擇安全卡牌`);
         return safeCards[Math.floor(Math.random() * safeCards.length)];
       }
     }
@@ -189,31 +201,42 @@ export class HardAI implements AIStrategy {
   }
 
   private predictPlayerNextMove(playerHistory: Card[]): CardClass[] {
+    console.log('🔮 開始預測玩家下一步...');
+    
     if (playerHistory.length < 2) {
+      console.log('📈 歷史資料不足，預測所有可能性');
       return [CardClass.WARRIOR, CardClass.MAGE, CardClass.RANGER]; // 所有可能
     }
 
     // 簡單的模式識別：檢查玩家是否有重複模式
     const recentClasses = playerHistory.slice(-3).map(card => card.class);
+    console.log(`🔍 分析最近模式: [${recentClasses.join(' → ')}]`);
     
     // 檢查是否有循環模式
     if (recentClasses.length >= 2) {
       const pattern = recentClasses.slice(-2);
+      console.log(`🔄 檢查循環模式: ${pattern[0]} → ${pattern[1]}`);
+      
       // 如果檢測到模式，預測下一個
       if (pattern[0] === CardClass.WARRIOR && pattern[1] === CardClass.MAGE) {
+        console.log('🎯 檢測到戰士→法師模式，預測下一步：遊俠');
         return [CardClass.RANGER]; // 預測玩家會出遊俠完成循環
       }
       if (pattern[0] === CardClass.MAGE && pattern[1] === CardClass.RANGER) {
+        console.log('🎯 檢測到法師→遊俠模式，預測下一步：戰士');
         return [CardClass.WARRIOR];
       }
       if (pattern[0] === CardClass.RANGER && pattern[1] === CardClass.WARRIOR) {
+        console.log('🎯 檢測到遊俠→戰士模式，預測下一步：法師');
         return [CardClass.MAGE];
       }
     }
 
     // 預測玩家最不可能重複最近使用的職業
     const lastClass = recentClasses[recentClasses.length - 1];
-    return [CardClass.WARRIOR, CardClass.MAGE, CardClass.RANGER].filter(c => c !== lastClass);
+    const predictions = [CardClass.WARRIOR, CardClass.MAGE, CardClass.RANGER].filter(c => c !== lastClass);
+    console.log(`💭 預測玩家不會重複 ${lastClass}，可能選擇: [${predictions.join(', ')}]`);
+    return predictions;
   }
 
   private analyzePlayerClassFrequency(playerHistory: Card[]): [string, number][] {
@@ -249,7 +272,7 @@ export class HardAI implements AIStrategy {
 }
 
 /**
- * AI 工廠類
+ * 電腦對手工廠類
  */
 export class AIFactory {
   static createAI(difficulty: 'easy' | 'normal' | 'hard'): AIStrategy {
@@ -268,11 +291,11 @@ export class AIFactory {
   static getAIDifficultyDescription(difficulty: 'easy' | 'normal' | 'hard'): string {
     switch (difficulty) {
       case 'easy':
-        return '簡單 - AI 隨機出牌，適合新手練習';
+        return '簡單 - 電腦隨機出牌，適合新手練習';
       case 'normal':
-        return '普通 - AI 會分析你的出牌模式，有一定策略性';
+        return '普通 - 電腦會分析你的出牌模式，有一定策略性';
       case 'hard':
-        return '困難 - AI 使用進階策略，會根據局面調整戰術';
+        return '困難 - 電腦使用進階策略，會根據局面調整戰術';
       default:
         return '未知難度';
     }

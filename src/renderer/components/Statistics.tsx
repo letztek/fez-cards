@@ -134,9 +134,9 @@ export const Statistics: React.FC<StatisticsProps> = ({ onClose }) => {
             <h3 className="text-lg font-semibold text-white mb-4">遊戲提示</h3>
             <div className="text-sm text-gray-300 space-y-2">
               <div>• 戰士克制遊俠，遊俠克制法師，法師克制戰士</div>
-              <div>• 觀察 AI 的出牌模式，調整你的策略</div>
+              <div>• 觀察電腦的出牌模式，調整你的策略</div>
               <div>• 保持職業平衡，不要過度依賴單一職業</div>
-              <div>• 在困難模式下，AI 會分析你的出牌習慣</div>
+              <div>• 在困難模式下，電腦會分析你的出牌習慣</div>
             </div>
           </div>
         </div>

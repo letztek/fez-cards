@@ -72,10 +72,10 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
             </div>
           </div>
 
-          {/* AI 難度設定 */}
+          {/* 電腦難度設定 */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              AI 難度
+              電腦難度
             </label>
             <div className="grid grid-cols-3 gap-2">
               {[
