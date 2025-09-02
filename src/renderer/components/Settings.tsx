@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useGameStore } from '../stores/game-store';
 import { Button } from './Button';
+import { AIFactory } from '../utils/ai-strategy';
 
 interface SettingsProps {
   onClose: () => void;
@@ -80,7 +81,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
             <label className="block text-sm font-medium text-gray-300 mb-2">
               {t('settings.aiDifficulty')}
             </label>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-2 mb-3">
               {[
                 { value: 'easy' },
                 { value: 'normal' },
@@ -98,6 +99,15 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
                   {t(`difficulty.${value}`)}
                 </button>
               ))}
+            </div>
+            {/* 顯示當前難度的詳細描述 */}
+            <div className="bg-slate-800 p-3 rounded text-sm text-gray-300">
+              <div className="font-medium text-red-400 mb-1">
+                {t(`difficulty.${settings.aiDifficulty}`)} - 策略說明
+              </div>
+              <div className="text-xs leading-relaxed">
+                {AIFactory.getAIDifficultyDescription(settings.aiDifficulty)}
+              </div>
             </div>
           </div>
 

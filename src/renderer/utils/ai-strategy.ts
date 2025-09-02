@@ -8,9 +8,46 @@ export class EasyAI implements AIStrategy {
   difficulty: 'easy' = 'easy';
 
   selectCard(availableCards: Card[], gameContext: GameContext): Card {
-    // 完全隨機選擇
+    console.log('😊 電腦 (簡單): 快速隨機選擇...');
+    
+    // 簡單模式：偶爾做出明顯不利的選擇來降低勝率
+    if (gameContext.playerPreviousCards.length > 0 && Math.random() < 0.3) {
+      // 30% 的機會故意選擇被玩家上一張牌克制的卡牌
+      const lastPlayerCard = gameContext.playerPreviousCards[gameContext.playerPreviousCards.length - 1];
+      const weakCard = this.selectWeakCard(availableCards, lastPlayerCard);
+      if (weakCard) {
+        console.log(`😅 電腦 (簡單) 故意選擇弱勢卡牌: ${weakCard.class} (${weakCard.name})`);
+        return weakCard;
+      }
+    }
+    
+    // 其餘時間隨機選擇
     const randomIndex = Math.floor(Math.random() * availableCards.length);
-    return availableCards[randomIndex];
+    const selectedCard = availableCards[randomIndex];
+    
+    console.log(`🎲 電腦 (簡單) 隨機選擇: ${selectedCard.class} (${selectedCard.name})`);
+    return selectedCard;
+  }
+
+  private selectWeakCard(availableCards: Card[], playerLastCard: Card): Card | null {
+    // 尋找會被玩家上一張牌克制的卡牌
+    const strongAgainst = BattleEngine.getStrongAgainst(playerLastCard.class);
+    if (strongAgainst) {
+      const weakCards = availableCards.filter(card => card.class === strongAgainst);
+      if (weakCards.length > 0) {
+        return weakCards[Math.floor(Math.random() * weakCards.length)];
+      }
+    }
+    return null;
+  }
+
+  getThinkingTime(): number {
+    // 簡單模式：500-800毫秒（幾乎瞬間反應）
+    return 500 + Math.random() * 300;
+  }
+
+  getDescription(): string {
+    return '完全隨機出牌，不考慮策略，適合新手練習';
   }
 }
 
@@ -21,8 +58,11 @@ export class NormalAI implements AIStrategy {
   difficulty: 'normal' = 'normal';
 
   selectCard(availableCards: Card[], gameContext: GameContext): Card {
+    console.log('🤔 電腦 (普通): 開始分析局面...');
+    
     // 如果玩家已經出過牌，嘗試分析模式
     if (gameContext.playerPreviousCards.length > 0) {
+      console.log('📊 電腦 (普通): 分析玩家出牌模式...');
       const preferredCard = this.analyzePlayerPattern(availableCards, gameContext);
       if (preferredCard) {
         return preferredCard;
@@ -30,7 +70,17 @@ export class NormalAI implements AIStrategy {
     }
 
     // 否則選擇平衡的策略
+    console.log('⚖️ 電腦 (普通): 使用平衡策略...');
     return this.selectBalancedCard(availableCards);
+  }
+
+  getThinkingTime(): number {
+    // 普通模式：1000-1500毫秒（適中思考時間）
+    return 1000 + Math.random() * 500;
+  }
+
+  getDescription(): string {
+    return '會分析你的出牌模式並做出相應調整，有一定策略性';
   }
 
   private analyzePlayerPattern(availableCards: Card[], gameContext: GameContext): Card | null {
@@ -95,7 +145,7 @@ export class HardAI implements AIStrategy {
   difficulty: 'hard' = 'hard';
 
   selectCard(availableCards: Card[], gameContext: GameContext): Card {
-    console.log('🔥 電腦 (困難) 開始分析局面...');
+    console.log('🔥 電腦 (困難) 開始深度分析局面...');
     console.log(`當前回合: ${gameContext.currentRound}, 分數 - 玩家:${gameContext.playerScore} vs 電腦:${gameContext.computerScore}`);
     console.log(`可用卡牌: [${availableCards.map(c => c.class).join(', ')}]`);
     console.log(`玩家歷史: [${gameContext.playerPreviousCards.map(c => c.class).join(', ')}]`);
@@ -111,6 +161,15 @@ export class HardAI implements AIStrategy {
     const optimalCard = this.selectOptimalCard(availableCards, gameContext);
     console.log(`⚖️ 電腦 (困難) 使用後備策略，選擇: ${optimalCard.class} (${optimalCard.name})`);
     return optimalCard;
+  }
+
+  getThinkingTime(): number {
+    // 困難模式：1500-2500毫秒（深度思考時間）
+    return 1500 + Math.random() * 1000;
+  }
+
+  getDescription(): string {
+    return '使用高級策略分析，會根據局面、回合數和分數差異調整戰術，具有很強的適應性';
   }
 
   private advancedStrategy(availableCards: Card[], gameContext: GameContext): Card | null {
@@ -289,15 +348,7 @@ export class AIFactory {
   }
 
   static getAIDifficultyDescription(difficulty: 'easy' | 'normal' | 'hard'): string {
-    switch (difficulty) {
-      case 'easy':
-        return '簡單 - 電腦隨機出牌，適合新手練習';
-      case 'normal':
-        return '普通 - 電腦會分析你的出牌模式，有一定策略性';
-      case 'hard':
-        return '困難 - 電腦使用進階策略，會根據局面調整戰術';
-      default:
-        return '未知難度';
-    }
+    const ai = AIFactory.createAI(difficulty);
+    return ai.getDescription?.() || '未知難度';
   }
 }

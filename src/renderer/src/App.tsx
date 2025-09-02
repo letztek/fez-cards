@@ -83,12 +83,14 @@ function App() {
     setBattlePhase('computer-thinking');
 
     try {
-      // 階段 1: 電腦思考 (模擬思考時間)
+      // 階段 1: 電腦思考 (動態思考時間)
       console.log('🤖 電腦思考中...');
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // 階段 2: 電腦選擇卡牌
       const ai = AIFactory.createAI(settings.aiDifficulty);
+      const thinkingTime = ai.getThinkingTime?.() || 1000;
+      console.log(`⏱️ 電腦思考時間: ${thinkingTime}ms`);
+      await new Promise(resolve => setTimeout(resolve, thinkingTime));
+
+      // 階段 2: 電腦選擇卡牌 (重用同一個 AI 實例)
       const aiCard = ai.selectCard(gameState.computerHand, {
         playerPreviousCards: gameState.battleHistory.map(b => b.playerCard),
         currentRound: gameState.currentRound,

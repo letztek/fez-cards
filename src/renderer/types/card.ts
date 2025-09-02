@@ -57,6 +57,8 @@ export interface GameSettings {
 export interface AIStrategy {
   difficulty: 'easy' | 'normal' | 'hard';
   selectCard: (availableCards: Card[], gameContext: GameContext) => Card;
+  getThinkingTime?: () => number;
+  getDescription?: () => string;
 }
 
 export interface GameContext {
