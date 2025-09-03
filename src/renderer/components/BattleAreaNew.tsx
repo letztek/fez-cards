@@ -35,7 +35,7 @@ export const BattleAreaNew: React.FC<BattleAreaNewProps> = ({
 
   // 控制電腦卡牌翻轉時機
   useEffect(() => {
-    console.log('🎬 BattleArea - 對戰階段變更:', battlePhase);
+    // console.log('🎬 BattleArea - 對戰階段變更:', battlePhase);
     
     if (battlePhase === 'waiting') {
       // 重置翻轉狀態
@@ -134,7 +134,7 @@ export const BattleAreaNew: React.FC<BattleAreaNewProps> = ({
   };
 
   const handleComputerFlipComplete = () => {
-    console.log('✨ 電腦卡牌翻轉動畫完成');
+    // console.log('✨ 電腦卡牌翻轉動畫完成');
     setComputerFlipped(true); // 確保翻轉狀態正確
     onComputerRevealComplete?.();
   };

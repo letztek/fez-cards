@@ -6,7 +6,7 @@ interface SimpleModalProps {
 }
 
 export const SimpleModal: React.FC<SimpleModalProps> = ({ onClose, title }) => {
-  console.log('SimpleModal 正在渲染，title:', title);
+//   console.log('SimpleModal 正在渲染，title:', title);
   
   return (
     <div 
@@ -24,7 +24,7 @@ export const SimpleModal: React.FC<SimpleModalProps> = ({ onClose, title }) => {
         fontSize: '16px'
       }}
       onClick={(e) => {
-        console.log('背景被點擊');
+//         console.log('背景被點擊');
         if (e.target === e.currentTarget) {
           onClose();
         }
@@ -41,7 +41,7 @@ export const SimpleModal: React.FC<SimpleModalProps> = ({ onClose, title }) => {
           boxShadow: '0 10px 25px rgba(0, 0, 0, 0.5)'
         }}
         onClick={(e) => {
-          console.log('模態內容被點擊');
+//           console.log('模態內容被點擊');
           e.stopPropagation();
         }}
       >
@@ -63,7 +63,7 @@ export const SimpleModal: React.FC<SimpleModalProps> = ({ onClose, title }) => {
           </h2>
           <button
             onClick={() => {
-              console.log('關閉按鈕被點擊');
+//               console.log('關閉按鈕被點擊');
               onClose();
             }}
             style={{
@@ -110,7 +110,7 @@ export const SimpleModal: React.FC<SimpleModalProps> = ({ onClose, title }) => {
         <div style={{ marginTop: '20px', textAlign: 'right' }}>
           <button
             onClick={() => {
-              console.log('確定按鈕被點擊');
+//               console.log('確定按鈕被點擊');
               onClose();
             }}
             style={{

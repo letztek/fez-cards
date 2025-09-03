@@ -28,7 +28,7 @@ export class StorageManager {
         return JSON.parse(stored);
       }
     } catch (error) {
-      console.error('Failed to load settings:', error);
+//       console.error('Failed to load settings:', error);
     }
     return null;
   }
@@ -40,7 +40,7 @@ export class StorageManager {
     try {
       localStorage.setItem(STORAGE_KEYS.GAME_SETTINGS, JSON.stringify(settings));
     } catch (error) {
-      console.error('Failed to save settings:', error);
+//       console.error('Failed to save settings:', error);
     }
   }
 
@@ -54,7 +54,7 @@ export class StorageManager {
         return JSON.parse(stored);
       }
     } catch (error) {
-      console.error('Failed to load stats:', error);
+//       console.error('Failed to load stats:', error);
     }
     return null;
   }
@@ -66,7 +66,7 @@ export class StorageManager {
     try {
       localStorage.setItem(STORAGE_KEYS.GAME_STATS, JSON.stringify(stats));
     } catch (error) {
-      console.error('Failed to save stats:', error);
+//       console.error('Failed to save stats:', error);
     }
   }
 
@@ -120,7 +120,7 @@ export class StorageManager {
       localStorage.removeItem(STORAGE_KEYS.GAME_SETTINGS);
       localStorage.removeItem(STORAGE_KEYS.GAME_STATS);
     } catch (error) {
-      console.error('Failed to clear storage:', error);
+//       console.error('Failed to clear storage:', error);
     }
   }
 
@@ -156,7 +156,7 @@ export class StorageManager {
       
       return true;
     } catch (error) {
-      console.error('Failed to import data:', error);
+//       console.error('Failed to import data:', error);
       return false;
     }
   }

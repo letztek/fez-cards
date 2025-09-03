@@ -81,7 +81,7 @@ export class CardManager {
     for (const [cardClass, expectedCount] of Object.entries(expectedCounts)) {
       const actualCount = this.getCardsByClass(cardClass as CardClass).length;
       if (actualCount !== expectedCount) {
-        console.error(`Invalid card count for ${cardClass}: expected ${expectedCount}, got ${actualCount}`);
+//         console.error(`Invalid card count for ${cardClass}: expected ${expectedCount}, got ${actualCount}`);
         return false;
       }
     }

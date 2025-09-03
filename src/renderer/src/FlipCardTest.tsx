@@ -50,7 +50,7 @@ export const FlipCardTest: React.FC = () => {
   };
 
   const handleAutoFlipDemo = () => {
-    console.log('🎬 開始自動翻轉演示');
+//     console.log('🎬 開始自動翻轉演示');
     setAutoFlipDemo(true);
     
     // 重置狀態

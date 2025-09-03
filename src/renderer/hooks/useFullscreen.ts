@@ -31,7 +31,7 @@ export const useFullscreen = () => {
         await (element as any).msRequestFullscreen();
       }
     } catch (error) {
-      console.warn('Failed to enter fullscreen:', error);
+//       console.warn('Failed to enter fullscreen:', error);
     }
   };
 
@@ -48,7 +48,7 @@ export const useFullscreen = () => {
         await (document as any).msExitFullscreen();
       }
     } catch (error) {
-      console.warn('Failed to exit fullscreen:', error);
+//       console.warn('Failed to exit fullscreen:', error);
     }
   };
 

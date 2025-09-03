@@ -97,7 +97,7 @@ const CardComponent: React.FC<CardProps> = ({
 
   const handleImageError = () => {
     setImageError(true);
-    console.error(`Failed to load card image: ${card.imageUrl}`);
+//     console.error(`Failed to load card image: ${card.imageUrl}`);
   };
 
   return (
@@ -148,7 +148,7 @@ const CardComponent: React.FC<CardProps> = ({
               alt="Card Back"
               className="w-full h-full object-cover"
               onError={(e) => {
-                console.error('Failed to load card back image:', card.backImageUrl);
+//                 console.error('Failed to load card back image:', card.backImageUrl);
                 // 如果背面圖片載入失敗，顯示預設背面
                 (e.target as HTMLImageElement).style.display = 'none';
               }}

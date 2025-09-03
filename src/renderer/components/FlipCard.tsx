@@ -55,12 +55,12 @@ export const FlipCard: React.FC<FlipCardProps> = ({
   useEffect(() => {
     if (autoFlip && !isFlippedState) {
       const timer = setTimeout(() => {
-        console.log(`🎴 電腦卡牌開始翻轉: ${card.name}`);
+        // console.log(`🎴 電腦卡牌開始翻轉: ${card.name}`);
         setIsFlippedState(true);
         
         // 翻轉動畫完成後的回調
         const completeTimer = setTimeout(() => {
-          console.log(`✨ 電腦卡牌翻轉完成: ${card.name}`);
+          // console.log(`✨ 電腦卡牌翻轉完成: ${card.name}`);
           onFlipComplete?.();
         }, 1000); // CSS transition 時間
 
@@ -82,7 +82,7 @@ export const FlipCard: React.FC<FlipCardProps> = ({
 
   const handleImageError = () => {
     setImageError(true);
-    console.error(`Failed to load card image: ${card.imageUrl}`);
+    // console.error(`Failed to load card image: ${card.imageUrl}`);
   };
 
   return (
@@ -127,7 +127,7 @@ export const FlipCard: React.FC<FlipCardProps> = ({
               objectFit: 'cover'
             }}
             onError={(e) => {
-              console.error('Failed to load card back image:', card.backImageUrl);
+              // console.error('Failed to load card back image:', card.backImageUrl);
               // 如果背面圖片載入失敗，顯示預設背面
               (e.target as HTMLImageElement).style.display = 'none';
             }}

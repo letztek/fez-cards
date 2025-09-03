@@ -74,7 +74,7 @@ export class ImagePreloader {
         }
       } else {
         // Promise 本身被拒絕的情況（不太可能發生）
-        console.error('Unexpected promise rejection:', result.reason);
+//         console.error('Unexpected promise rejection:', result.reason);
       }
     });
 

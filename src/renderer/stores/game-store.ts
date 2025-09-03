@@ -72,7 +72,7 @@ export const useGameStore = create<GameStore>()(
       try {
         const cardSet = await CardLoader.loadAllCards((loaded, total) => {
           // 可以在這裡更新載入進度，但目前先簡化
-          console.log(`Loading cards: ${loaded}/${total}`);
+          // console.log(`Loading cards: ${loaded}/${total}`);
         });
         const cardManager = new CardManager(cardSet);
 
@@ -88,13 +88,13 @@ export const useGameStore = create<GameStore>()(
           state.error = null;
         });
 
-        console.log('Game initialized successfully', cardManager.getCardStats());
+        // console.log('Game initialized successfully', cardManager.getCardStats());
       } catch (error) {
         set((state) => {
           state.isLoading = false;
           state.error = error instanceof Error ? error.message : 'Unknown error occurred';
         });
-        console.error('Failed to initialize game:', error);
+        // console.error('Failed to initialize game:', error);
       }
     },
 
@@ -123,7 +123,7 @@ export const useGameStore = create<GameStore>()(
           state.error = null;
         });
 
-        console.log('New game started', { playerCards: player.length, computerCards: computer.length });
+        // console.log('New game started', { playerCards: player.length, computerCards: computer.length });
       } catch (error) {
         set((state) => {
           state.error = error instanceof Error ? error.message : 'Failed to start new game';
@@ -231,7 +231,7 @@ export const useGameStore = create<GameStore>()(
       set((state) => {
         // 驗證回合數不能超過手牌數（每人6張卡牌）
         if (newSettings.maxRounds && newSettings.maxRounds > 6) {
-          console.warn('Maximum rounds cannot exceed 6 (hand size limit)');
+          // console.warn('Maximum rounds cannot exceed 6 (hand size limit)');
           newSettings.maxRounds = 6;
         }
         

@@ -4,7 +4,7 @@ export const ButtonTest: React.FC = () => {
   const [clickCount, setClickCount] = useState(0);
 
   const handleClick = () => {
-    console.log('按鈕被點擊了！', clickCount);
+//     console.log('按鈕被點擊了！', clickCount);
     setClickCount(prev => prev + 1);
     alert(`按鈕被點擊了 ${clickCount + 1} 次！`);
   };
@@ -38,7 +38,7 @@ export const ButtonTest: React.FC = () => {
 
         <button
           onClick={() => {
-            console.log('設定按鈕被點擊');
+//             console.log('設定按鈕被點擊');
             alert('這是模擬的設定按鈕');
           }}
           style={{
@@ -56,7 +56,7 @@ export const ButtonTest: React.FC = () => {
 
         <button
           onClick={() => {
-            console.log('統計按鈕被點擊');
+//             console.log('統計按鈕被點擊');
             alert('這是模擬的統計按鈕');
           }}
           style={{

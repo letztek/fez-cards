@@ -54,7 +54,7 @@ function App() {
   const { isFullscreen, isFullscreenSupported, toggleFullscreen } = useFullscreen();
 
   useEffect(() => {
-    console.log('App mounted, initializing game...');
+    // console.log('App mounted, initializing game...');
     initializeGame();
   }, [initializeGame]);
 
@@ -71,7 +71,7 @@ function App() {
   };
 
   const handleCardSelect = (card: any) => {
-    console.log('🃏 玩家選擇卡牌:', card.name);
+    // console.log('🃏 玩家選擇卡牌:', card.name);
     selectCard(card.id);
     setBattlePhase('player-selected');
     // 清除之前的對戰結果和電腦卡牌
@@ -82,16 +82,16 @@ function App() {
   const handleBattleConfirm = async () => {
     if (!gameState.selectedCard) return;
 
-    console.log('⚔️ 開始對戰流程');
+    // console.log('⚔️ 開始對戰流程');
     setIsProcessing(true);
     setBattlePhase('computer-thinking');
 
     try {
       // 階段 1: 電腦思考 (動態思考時間)
-      console.log('🤖 電腦思考中...');
+      // console.log('🤖 電腦思考中...');
       const ai = AIFactory.createAI(settings.aiDifficulty);
       const thinkingTime = ai.getThinkingTime?.() || 1000;
-      console.log(`⏱️ 電腦思考時間: ${thinkingTime}ms`);
+      // console.log(`⏱️ 電腦思考時間: ${thinkingTime}ms`);
       await new Promise(resolve => setTimeout(resolve, thinkingTime));
 
       // 階段 2: 電腦選擇卡牌 (重用同一個 AI 實例)
@@ -102,14 +102,14 @@ function App() {
         computerScore: gameState.computerScore
       });
 
-      console.log('🎴 電腦選擇卡牌:', aiCard.name);
+      // console.log('🎴 電腦選擇卡牌:', aiCard.name);
       setComputerCard(aiCard);
       
       // 階段 3: 開始電腦翻牌動畫
       setBattlePhase('computer-reveal');
       
     } catch (err) {
-      console.error('Battle error:', err);
+      // console.error('Battle error:', err);
       setIsProcessing(false);
       setBattlePhase('waiting');
     }
@@ -117,7 +117,7 @@ function App() {
 
   // 處理電腦翻牌完成
   const handleComputerRevealComplete = async () => {
-    console.log('✨ 電腦翻牌動畫完成，開始計算結果');
+    // console.log('✨ 電腦翻牌動畫完成，開始計算結果');
     
     try {
       // 計算對戰結果
@@ -128,7 +128,7 @@ function App() {
       setBattlePhase('result');
       
     } catch (err) {
-      console.error('Battle calculation error:', err);
+      // console.error('Battle calculation error:', err);
     } finally {
       setIsProcessing(false);
     }
@@ -186,7 +186,7 @@ function App() {
   );
 
   // Debug info
-  console.log('App render - isLoading:', isLoading, 'error:', error, 'gameState.phase:', gameState.phase);
+  // console.log('App render - isLoading:', isLoading, 'error:', error, 'gameState.phase:', gameState.phase);
 
   // 顯示圖片測試頁面
   if (showImageTest) {
@@ -256,8 +256,8 @@ function App() {
     );
   }
 
-  // 除錯按鈕
-  const debugButton = (
+  // 除錯按鈕 (生產環境已隱藏)
+  const debugButton = false && (
     <div className="fixed top-4 left-4 z-50 space-y-2">
       <button
         onClick={() => setShowImageTest(true)}
@@ -285,7 +285,7 @@ function App() {
       </button>
       <button
         onClick={() => {
-          console.log('顯示簡單模態窗口');
+          // console.log('顯示簡單模態窗口');
           setShowSimpleModal('調試');
         }}
         className="block bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm"
@@ -294,12 +294,12 @@ function App() {
       </button>
       <button
         onClick={() => {
-          console.log('=== 遊戲狀態除錯 ===');
-          console.log('gameState:', gameState);
-          console.log('playerHand:', gameState.playerHand);
-          console.log('computerHand:', gameState.computerHand);
-          console.log('isLoading:', isLoading);
-          console.log('error:', error);
+          // console.log('=== 遊戲狀態除錯 ===');
+          // console.log('gameState:', gameState);
+          // console.log('playerHand:', gameState.playerHand);
+          // console.log('computerHand:', gameState.computerHand);
+          // console.log('isLoading:', isLoading);
+          // console.log('error:', error);
         }}
         className="block bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-sm"
       >
@@ -445,7 +445,7 @@ function App() {
                   </Button>
                   <Button
                     onClick={() => {
-                      console.log('設定按鈕被點擊了！');
+                      // console.log('設定按鈕被點擊了！');
                       setShowSettings(true);
                     }}
                     variant="secondary"
@@ -455,7 +455,7 @@ function App() {
                   </Button>
                   <Button
                     onClick={() => {
-                      console.log('統計按鈕被點擊了！');
+                      // console.log('統計按鈕被點擊了！');
                       setShowStatistics(true);
                     }}
                     variant="secondary"
@@ -465,7 +465,7 @@ function App() {
                   </Button>
                   <Button
                     onClick={() => {
-                      console.log('快捷鍵按鈕被點擊了！');
+                      // console.log('快捷鍵按鈕被點擊了！');
                       setShowKeyboardHelp(true);
                     }}
                     variant="secondary"

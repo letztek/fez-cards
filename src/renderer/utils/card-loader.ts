@@ -73,7 +73,7 @@ export class CardLoader {
         rangers: cards.filter(card => card.class === CardClass.RANGER)
       };
     } catch (error) {
-      console.error('Failed to load cards:', error);
+//       console.error('Failed to load cards:', error);
       throw new Error('無法載入卡牌資料');
     }
   }
@@ -187,30 +187,30 @@ export class CardLoader {
    * 預載入所有卡牌圖片
    */
   static async preloadCardImages(cards: Card[]): Promise<void> {
-    console.log(`Starting to preload ${cards.length} card images...`);
+//     console.log(`Starting to preload ${cards.length} card images...`);
     
     const imagePromises = cards.map((card, index) => {
       return new Promise<void>((resolve) => {
         const img = new Image();
         img.onload = () => {
-          console.log(`✅ Loaded (${index + 1}/${cards.length}): ${card.imageUrl}`);
+//           console.log(`✅ Loaded (${index + 1}/${cards.length}): ${card.imageUrl}`);
           resolve();
         };
         img.onerror = (error) => {
-          console.warn(`⚠️ Failed to load image (${index + 1}/${cards.length}): ${card.imageUrl}`, error);
+//           console.warn(`⚠️ Failed to load image (${index + 1}/${cards.length}): ${card.imageUrl}`, error);
           // Don't reject, just resolve to continue loading other images
           resolve();
         };
-        console.log(`📥 Loading: ${card.imageUrl}`);
+//         console.log(`📥 Loading: ${card.imageUrl}`);
         img.src = card.imageUrl;
       });
     });
 
     try {
       await Promise.all(imagePromises);
-      console.log(`🎉 Finished preloading ${cards.length} card images`);
+//       console.log(`🎉 Finished preloading ${cards.length} card images`);
     } catch (error) {
-      console.error('Error during image preloading:', error);
+//       console.error('Error during image preloading:', error);
       // Don't throw error, allow game to continue with missing images
     }
   }
