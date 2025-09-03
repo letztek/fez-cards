@@ -17,6 +17,7 @@ import { Settings } from '../components/Settings';
 import { Statistics } from '../components/Statistics';
 import { KeyboardHelp } from '../components/KeyboardHelp';
 import { useGameKeyboard } from '../hooks/useKeyboard';
+import { useFullscreen } from '../hooks/useFullscreen';
 
 
 function App() {
@@ -48,6 +49,9 @@ function App() {
   const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
   const [showTestModal, setShowTestModal] = useState('');
   const [showSimpleModal, setShowSimpleModal] = useState('');
+  
+  // 全螢幕功能
+  const { isFullscreen, isFullscreenSupported, toggleFullscreen } = useFullscreen();
 
   useEffect(() => {
     console.log('App mounted, initializing game...');
@@ -171,15 +175,15 @@ function App() {
     }
   };
 
-  // 設定快捷鍵（暫時關閉以測試按鈕問題）
-  // useGameKeyboard(
-  //   handleCardSelectByIndex,
-  //   handleBattleConfirm,
-  //   handleNextRound,
-  //   handleEscape,
-  //   gameState.phase,
-  //   !showSettings && !showStatistics && !showImageTest && !showGameDebug && !showKeyboardHelp && !showButtonTest
-  // );
+  // 設定快捷鍵
+  useGameKeyboard(
+    handleCardSelectByIndex,
+    handleBattleConfirm,
+    handleNextRound,
+    handleEscape,
+    gameState.phase,
+    !showSettings && !showStatistics && !showImageTest && !showGameDebug && !showKeyboardHelp && !showButtonTest
+  );
 
   // Debug info
   console.log('App render - isLoading:', isLoading, 'error:', error, 'gameState.phase:', gameState.phase);
@@ -301,6 +305,16 @@ function App() {
       >
         {t('debug.debugInfo')}
       </button>
+      
+      {/* 全螢幕按鈕 */}
+      {isFullscreenSupported && (
+        <button
+          onClick={toggleFullscreen}
+          className="block bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded text-sm"
+        >
+          {isFullscreen ? `${t('menu.exitFullscreen')} (F11)` : `${t('menu.fullscreen')} (F11)`}
+        </button>
+      )}
     </div>
   );
 
@@ -459,6 +473,17 @@ function App() {
                   >
                     ⌨️ {t('menu.keyboardHelp')}
                   </Button>
+                  
+                  {/* 全螢幕按鈕 */}
+                  {isFullscreenSupported && (
+                    <Button
+                      onClick={toggleFullscreen}
+                      variant="secondary"
+                      className="w-full text-sm"
+                    >
+                      {isFullscreen ? `📤 ${t('menu.exitFullscreen')}` : `📺 ${t('menu.fullscreen')}`} (F11)
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>

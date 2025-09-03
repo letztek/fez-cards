@@ -10,35 +10,12 @@ export class EasyAI implements AIStrategy {
   selectCard(availableCards: Card[], gameContext: GameContext): Card {
     console.log('😊 電腦 (簡單): 快速隨機選擇...');
     
-    // 簡單模式：偶爾做出明顯不利的選擇來降低勝率
-    if (gameContext.playerPreviousCards.length > 0 && Math.random() < 0.3) {
-      // 30% 的機會故意選擇被玩家上一張牌克制的卡牌
-      const lastPlayerCard = gameContext.playerPreviousCards[gameContext.playerPreviousCards.length - 1];
-      const weakCard = this.selectWeakCard(availableCards, lastPlayerCard);
-      if (weakCard) {
-        console.log(`😅 電腦 (簡單) 故意選擇弱勢卡牌: ${weakCard.class} (${weakCard.name})`);
-        return weakCard;
-      }
-    }
-    
-    // 其餘時間隨機選擇
+    // 完全隨機選擇，不考慮任何策略
     const randomIndex = Math.floor(Math.random() * availableCards.length);
     const selectedCard = availableCards[randomIndex];
     
     console.log(`🎲 電腦 (簡單) 隨機選擇: ${selectedCard.class} (${selectedCard.name})`);
     return selectedCard;
-  }
-
-  private selectWeakCard(availableCards: Card[], playerLastCard: Card): Card | null {
-    // 尋找會被玩家上一張牌克制的卡牌
-    const strongAgainst = BattleEngine.getStrongAgainst(playerLastCard.class);
-    if (strongAgainst) {
-      const weakCards = availableCards.filter(card => card.class === strongAgainst);
-      if (weakCards.length > 0) {
-        return weakCards[Math.floor(Math.random() * weakCards.length)];
-      }
-    }
-    return null;
   }
 
   getThinkingTime(): number {

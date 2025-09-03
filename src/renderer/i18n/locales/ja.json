@@ -23,6 +23,8 @@
     "settings": "ゲーム設定",
     "statistics": "ゲーム統計",
     "keyboardHelp": "キーボードショートカット",
+    "fullscreen": "フルスクリーンモード",
+    "exitFullscreen": "フルスクリーン終了",
     "ready": "ゲーム開始の準備完了"
   },
   "game": {

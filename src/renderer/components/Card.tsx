@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { motion } from 'framer-motion';
 import { Card as CardType, CardClass } from '../types/card';
 
@@ -35,7 +35,7 @@ const CARD_CLASSES = {
   }
 };
 
-export const Card: React.FC<CardProps> = ({
+const CardComponent: React.FC<CardProps> = ({
   card,
   size = 'medium',
   state = 'idle',
@@ -122,6 +122,16 @@ export const Card: React.FC<CardProps> = ({
       whileHover={isClickable && state === 'idle' ? 'hover' : undefined}
       onClick={handleClick}
       whileTap={isClickable ? { scale: 0.95 } : undefined}
+      role="button"
+      tabIndex={isClickable ? 0 : -1}
+      aria-label={`${card.name} - ${card.class} card ${isSelected ? '(selected)' : ''}`}
+      aria-pressed={isSelected}
+      onKeyDown={(e) => {
+        if (isClickable && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
     >
       <div className="w-full h-full relative">
         {showBack ? (
@@ -237,3 +247,17 @@ export const Card: React.FC<CardProps> = ({
     </motion.div>
   );
 };
+
+CardComponent.displayName = 'Card';
+
+// 使用 React.memo 優化效能，只在 props 真正改變時重新渲染
+export const Card = memo(CardComponent, (prevProps, nextProps) => {
+  return (
+    prevProps.card.id === nextProps.card.id &&
+    prevProps.size === nextProps.size &&
+    prevProps.state === nextProps.state &&
+    prevProps.showBack === nextProps.showBack &&
+    prevProps.className === nextProps.className &&
+    prevProps.onClick === nextProps.onClick
+  );
+});

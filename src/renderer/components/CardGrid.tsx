@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Card as CardComponent } from './Card';
@@ -16,7 +16,7 @@ interface CardGridProps {
   title?: string;
 }
 
-export const CardGrid: React.FC<CardGridProps> = ({
+const CardGridComponent: React.FC<CardGridProps> = ({
   cards,
   onCardClick,
   selectedCardId,
@@ -28,6 +28,21 @@ export const CardGrid: React.FC<CardGridProps> = ({
   title
 }) => {
   const { t } = useTranslation();
+  
+  // 使用 useMemo 優化計算結果
+  const gridCols = useMemo(() => {
+    if (maxCardsPerRow) {
+      return Math.min(maxCardsPerRow, cards.length);
+    }
+    
+    // Auto-calculate based on card count
+    if (cards.length <= 2) return cards.length;
+    if (cards.length <= 4) return 2;
+    if (cards.length <= 6) return 3;
+    if (cards.length <= 9) return 3;
+    return 4;
+  }, [maxCardsPerRow, cards.length]);
+  
   const getCardState = (card: CardType) => {
     if (disabledCardIds.includes(card.id)) return 'disabled';
     if (selectedCardId === card.id) return 'selected';
@@ -40,21 +55,6 @@ export const CardGrid: React.FC<CardGridProps> = ({
     }
   };
 
-  // Calculate grid layout based on card count and screen size
-  const getGridCols = () => {
-    if (maxCardsPerRow) {
-      return Math.min(maxCardsPerRow, cards.length);
-    }
-
-    // Auto-calculate based on card count
-    if (cards.length <= 2) return cards.length;
-    if (cards.length <= 4) return 2;
-    if (cards.length <= 6) return 3;
-    if (cards.length <= 9) return 3;
-    return 4;
-  };
-
-  const gridCols = getGridCols();
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -155,6 +155,8 @@ export const CardGrid: React.FC<CardGridProps> = ({
     </div>
   );
 };
+
+export const CardGrid = memo(CardGridComponent);
 
 // Responsive card grid with auto-sizing
 export const ResponsiveCardGrid: React.FC<CardGridProps> = (props) => {

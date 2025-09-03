@@ -23,6 +23,8 @@
     "settings": "遊戲設定",
     "statistics": "遊戲統計",
     "keyboardHelp": "快捷鍵說明",
+    "fullscreen": "全螢幕模式",
+    "exitFullscreen": "退出全螢幕",
     "ready": "準備開始遊戲"
   },
   "game": {

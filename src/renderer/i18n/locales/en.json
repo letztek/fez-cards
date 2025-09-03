@@ -23,6 +23,8 @@
     "settings": "Game Settings",
     "statistics": "Game Statistics",
     "keyboardHelp": "Keyboard Shortcuts",
+    "fullscreen": "Fullscreen Mode",
+    "exitFullscreen": "Exit Fullscreen",
     "ready": "Ready to Start"
   },
   "game": {

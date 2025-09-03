@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { CardGrid } from './CardGrid';
 import { BattleAreaNew } from './BattleAreaNew';
@@ -47,6 +47,24 @@ export const GameBoard: React.FC<GameBoardProps> = ({
 }) => {
   const { t } = useTranslation();
   const [isBattleAnimating, setIsBattleAnimating] = useState(false);
+  const [isCompact, setIsCompact] = useState(false);
+  const [screenSize, setScreenSize] = useState({ width: window.innerWidth, height: window.innerHeight });
+
+  // 監聽視窗大小變化
+  useEffect(() => {
+    const handleResize = () => {
+      const newSize = { width: window.innerWidth, height: window.innerHeight };
+      setScreenSize(newSize);
+      
+      // 自動在小螢幕上啟用精簡模式
+      setIsCompact(newSize.width < 1200 || newSize.height < 700);
+    };
+
+    window.addEventListener('resize', handleResize);
+    handleResize(); // 初始檢查
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleBattleConfirm = async () => {
     if (!selectedCard || isProcessing) return;
@@ -83,10 +101,21 @@ export const GameBoard: React.FC<GameBoardProps> = ({
             onClick={onExitGame}
             className="absolute top-2 right-2 text-gray-400 hover:text-white text-xl transition-colors z-10"
             title={t('game.backToMenu')}
+            aria-label={t('game.backToMenu')}
           >
             ×
           </button>
         )}
+        
+        {/* Compact Mode Toggle */}
+        <button
+          onClick={() => setIsCompact(!isCompact)}
+          className="absolute top-2 right-10 text-gray-400 hover:text-white text-lg transition-colors z-10"
+          title={isCompact ? '展開視圖' : '精簡視圖'}
+          aria-label={isCompact ? '展開視圖' : '精簡視圖'}
+        >
+          {isCompact ? '📖' : '📑'}
+        </button>
         <div className="text-center">
           <div className="text-sm text-blue-400">{t('game.playerScore', { score: '' }).split(':')[0]}</div>
           <div className="text-2xl font-bold text-white">{playerScore}</div>
