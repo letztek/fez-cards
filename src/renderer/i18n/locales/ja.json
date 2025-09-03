@@ -6,17 +6,23 @@
   "classes": {
     "warrior": "ウォリアー",
     "scout": "スカウト",
-    "sorcerer": "ソーサラー"
+    "ranger": "レンジャー",
+    "sorcerer": "ソーサラー",
+    "mage": "メイジ"
   },
   "classDescription": {
     "warrior": "近接戦闘の専門家、物理攻撃が得意",
     "scout": "遠距離射手、機敏で正確",
-    "sorcerer": "魔法使い、元素の力を操る"
+    "ranger": "遠距離射手、機敏で正確",
+    "sorcerer": "魔法使い、元素の力を操る",
+    "mage": "魔法使い、元素の力を操る"
   },
   "classCounters": {
     "warrior": "スカウトに勝つ",
     "scout": "ソーサラーに勝つ",
-    "sorcerer": "ウォリアーに勝つ"
+    "ranger": "メイジに勝つ",
+    "sorcerer": "ウォリアーに勝つ",
+    "mage": "ウォリアーに勝つ"
   },
   "menu": {
     "startGame": "ゲーム開始",
@@ -78,20 +84,38 @@
   },
   "statistics": {
     "title": "ゲーム統計",
-    "totalGames": "総ゲーム数",
+    "totalGames": "総合統計",
     "wins": "勝利",
     "losses": "敗北",
     "ties": "引き分け",
     "winRate": "勝率",
     "favoriteClass": "お気に入りクラス",
+    "classUsage": "クラス使用統計",
+    "recentBattles": "最近のバトル履歴",
+    "round": "第{{number}}ラウンド",
+    "win": "勝利",
+    "loss": "敗北",
+    "tie": "引き分け",
+    "gameTips": "ゲームのコツ",
+    "tip1": "ウォリアーはスカウトに勝ち、スカウトはソーサラーに勝ち、ソーサラーはウォリアーに勝つ",
+    "tip2": "コンピューターのカード選択パターンを観察して戦略を調整する",
+    "tip3": "クラスのバランスを保ち、単一のクラスに過度に依存しない",
+    "tip4": "ハードモードでは、コンピューターがあなたのカード使用パターンを分析する",
+    "totalGamesCount": "総計{{count}}ゲームプレイ済み",
+    "currentGameBattles": "現在のゲーム記録",
+    "clearData": "データクリア",
+    "confirmClear": "クリア確認",
+    "confirmClearMessage": "すべての統計データをクリアしますか？この操作は元に戻せません。",
+    "cancel": "キャンセル",
+    "confirm": "確認",
     "close": "閉じる"
   },
   "keyboard": {
     "title": "キーボードショートカット",
-    "selectCard": "カード選択",
-    "confirm": "確認",
+    "selectCard": "位置でカードを選択",
+    "confirm": "戦闘確認 / 次のラウンド",
     "next": "次のラウンド",
-    "back": "戻る/キャンセル",
+    "back": "戻る / ダイアログを閉じる",
     "close": "閉じる"
   },
   "difficulty": {

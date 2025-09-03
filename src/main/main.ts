@@ -49,11 +49,11 @@ async function createWindow() {
     minHeight: 600,
     webPreferences: {
       preload,
-      // Warning: Enabling node integration and disabling context isolation is not secure in production
-      // Consider using contextBridge.exposeInMainWorld
-      // Read more at: https://www.electronjs.org/docs/latest/tutorial/security
-      nodeIntegration: true,
-      contextIsolation: false,
+      // 使用安全的配置
+      nodeIntegration: false,
+      contextIsolation: true,
+      // 禁用 Autofill 相關功能減少控制台警告
+      webSecurity: true,
     },
   });
 
@@ -109,8 +109,9 @@ ipcMain.handle('open-win', (_, arg) => {
   const childWindow = new BrowserWindow({
     webPreferences: {
       preload,
-      nodeIntegration: true,
-      contextIsolation: false,
+      nodeIntegration: false,
+      contextIsolation: true,
+      webSecurity: true,
     },
   });
 

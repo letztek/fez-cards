@@ -1,16 +1,19 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 interface KeyboardHelpProps {
   onClose: () => void;
 }
 
 export const KeyboardHelp: React.FC<KeyboardHelpProps> = ({ onClose }) => {
+  const { t } = useTranslation();
+  
   const shortcuts = [
-    { key: '1-6', description: '選擇對應位置的卡牌' },
-    { key: 'Enter / Space', description: '確認戰鬥 / 下一回合' },
-    { key: 'Esc', description: '返回上一頁 / 關閉對話框' },
-    { key: '↑↓←→', description: '導航選單項目' }
+    { key: '1-6', description: t('keyboard.selectCard') },
+    { key: 'Enter / Space', description: t('keyboard.confirm') },
+    { key: 'Esc', description: t('keyboard.back') },
+    { key: 'F11', description: t('menu.fullscreen') }
   ];
 
   return (
@@ -27,10 +30,11 @@ export const KeyboardHelp: React.FC<KeyboardHelpProps> = ({ onClose }) => {
         exit={{ scale: 0.9, opacity: 0 }}
       >
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-white">快捷鍵說明</h2>
+          <h2 className="text-2xl font-bold text-white">{t('keyboard.title')}</h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-white text-2xl"
+            aria-label={t('keyboard.close')}
           >
             ×
           </button>
@@ -51,22 +55,12 @@ export const KeyboardHelp: React.FC<KeyboardHelpProps> = ({ onClose }) => {
           ))}
         </div>
 
-        <div className="mt-6 p-4 bg-slate-700/50 rounded-lg">
-          <h3 className="text-sm font-semibold text-white mb-2">遊戲提示</h3>
-          <div className="text-xs text-gray-400 space-y-1">
-            <div>• 使用數字鍵 1-6 快速選擇卡牌</div>
-            <div>• 按 Enter 或空白鍵確認操作</div>
-            <div>• 按 Esc 鍵可以快速返回或關閉對話框</div>
-            <div>• 在遊戲中按 Esc 可以返回主選單</div>
-          </div>
-        </div>
-
         <div className="mt-6 flex justify-end">
           <button
             onClick={onClose}
             className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
           >
-            知道了
+            {t('keyboard.close')}
           </button>
         </div>
       </motion.div>

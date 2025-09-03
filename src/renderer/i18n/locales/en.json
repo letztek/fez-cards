@@ -6,17 +6,23 @@
   "classes": {
     "warrior": "Warrior",
     "scout": "Scout",
-    "sorcerer": "Sorcerer"
+    "ranger": "Ranger",
+    "sorcerer": "Sorcerer",
+    "mage": "Mage"
   },
   "classDescription": {
     "warrior": "Melee expert, specializes in physical attacks",
     "scout": "Ranged shooter, agile and precise",
-    "sorcerer": "Magic user, masters elemental forces"
+    "ranger": "Ranged shooter, agile and precise",
+    "sorcerer": "Magic user, masters elemental forces",
+    "mage": "Magic user, masters elemental forces"
   },
   "classCounters": {
     "warrior": "Counters Scout",
     "scout": "Counters Sorcerer",
-    "sorcerer": "Counters Warrior"
+    "ranger": "Counters Mage",
+    "sorcerer": "Counters Warrior",
+    "mage": "Counters Warrior"
   },
   "menu": {
     "startGame": "Start Game",
@@ -78,20 +84,38 @@
   },
   "statistics": {
     "title": "Game Statistics",
-    "totalGames": "Total Games",
+    "totalGames": "Overall Statistics",
     "wins": "Wins",
     "losses": "Losses",
     "ties": "Ties",
     "winRate": "Win Rate",
     "favoriteClass": "Favorite Class",
+    "classUsage": "Class Usage Statistics",
+    "recentBattles": "Recent Battle History",
+    "round": "Round {{number}}",
+    "win": "Win",
+    "loss": "Loss",
+    "tie": "Tie",
+    "gameTips": "Game Tips",
+    "tip1": "Warrior counters Scout, Scout counters Sorcerer, Sorcerer counters Warrior",
+    "tip2": "Observe the computer's card patterns and adjust your strategy",
+    "tip3": "Maintain class balance, don't rely too heavily on a single class",
+    "tip4": "In hard mode, the computer analyzes your card usage patterns",
+    "totalGamesCount": "Total {{count}} games played",
+    "currentGameBattles": "Current Game Records",
+    "clearData": "Clear Data",
+    "confirmClear": "Confirm Clear",
+    "confirmClearMessage": "Are you sure you want to clear all statistical data? This action cannot be undone.",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
     "close": "Close"
   },
   "keyboard": {
     "title": "Keyboard Shortcuts",
-    "selectCard": "Select Card",
-    "confirm": "Confirm",
+    "selectCard": "Select card by position",
+    "confirm": "Confirm battle / Next round",
     "next": "Next Round",
-    "back": "Back/Cancel",
+    "back": "Back / Close dialog",
     "close": "Close"
   },
   "difficulty": {

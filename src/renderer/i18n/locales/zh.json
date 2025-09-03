@@ -5,18 +5,24 @@
   },
   "classes": {
     "warrior": "戰士",
-    "scout": "遊俠", 
-    "sorcerer": "法師"
+    "scout": "遊俠",
+    "ranger": "遊俠", 
+    "sorcerer": "法師",
+    "mage": "法師"
   },
   "classDescription": {
     "warrior": "近戰專家，擅長物理攻擊",
     "scout": "遠程射手，靈活且精準",
-    "sorcerer": "魔法使用者，掌握元素力量"
+    "ranger": "遠程射手，靈活且精準",
+    "sorcerer": "魔法使用者，掌握元素力量",
+    "mage": "魔法使用者，掌握元素力量"
   },
   "classCounters": {
     "warrior": "克制遊俠",
     "scout": "克制法師",
-    "sorcerer": "克制戰士"
+    "ranger": "克制法師",
+    "sorcerer": "克制戰士",
+    "mage": "克制戰士"
   },
   "menu": {
     "startGame": "開始遊戲",
@@ -78,20 +84,38 @@
   },
   "statistics": {
     "title": "遊戲統計",
-    "totalGames": "總遊戲數",
-    "wins": "勝場",
-    "losses": "敗場", 
+    "totalGames": "總體戰績",
+    "wins": "勝利",
+    "losses": "失敗", 
     "ties": "平手",
     "winRate": "勝率",
     "favoriteClass": "最愛職業",
+    "classUsage": "職業使用統計",
+    "recentBattles": "最近戰鬥記錄",
+    "round": "第{{number}}回合",
+    "win": "勝利",
+    "loss": "失敗",
+    "tie": "平手",
+    "gameTips": "遊戲提示",
+    "tip1": "戰士克制遊俠，遊俠克制法師，法師克制戰士",
+    "tip2": "觀察電腦的出牌模式，調整你的策略",
+    "tip3": "保持職業平衡，不要過度依賴單一職業",
+    "tip4": "在困難模式下，電腦會分析你的出牌習慣",
+    "totalGamesCount": "總共遊玩 {{count}} 場遊戲",
+    "currentGameBattles": "當前遊戲記錄",
+    "clearData": "清除數據",
+    "confirmClear": "確認清除",
+    "confirmClearMessage": "確定要清除所有統計數據嗎？此操作無法撤銷。",
+    "cancel": "取消",
+    "confirm": "確認",
     "close": "關閉"
   },
   "keyboard": {
     "title": "快捷鍵說明",
-    "selectCard": "選擇卡牌",
-    "confirm": "確認",
+    "selectCard": "選擇對應位置的卡牌",
+    "confirm": "確認戰鬥 / 下一回合",
     "next": "下一回合",
-    "back": "返回/取消",
+    "back": "返回上一頁 / 關閉對話框",
     "close": "關閉"
   },
   "difficulty": {
