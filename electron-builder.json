@@ -9,17 +9,11 @@
     "src/renderer/public/**/*",
     "node_modules/**/*",
     "!node_modules/electron/**/*",
-    "!node_modules/electron-builder/**/*"
-  ],
-  "extraResources": [
-    {
-      "from": "src/renderer/public/cards",
-      "to": "cards"
-    }
+    "!node_modules/electron-builder/**/*",
+    "!**/*.{md,txt,log}"
   ],
   "mac": {
     "category": "public.app-category.games",
-    "icon": "assets/icon.icns",
     "target": [
       {
         "target": "dmg",
@@ -32,20 +26,14 @@
     ]
   },
   "win": {
-    "icon": "assets/icon.ico",
     "target": [
       {
-        "target": "nsis",
-        "arch": ["x64", "ia32"]
-      },
-      {
         "target": "portable",
-        "arch": ["x64", "ia32"]
+        "arch": ["x64"]
       }
     ]
   },
   "linux": {
-    "icon": "assets/icon.png",
     "target": [
       {
         "target": "AppImage",

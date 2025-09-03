@@ -1,4 +1,4 @@
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, protocol } from 'electron';
 import * as path from 'path';
 import * as os from 'os';
 
@@ -7,17 +7,26 @@ import * as os from 'os';
 // The built directory structure
 //
 // ├─┬ dist
-// │ ├─┬ electron
-// │ │ ├── main.js    > Electron-Main
+// │ ├─┬ main
+// │ │ └── main.js    > Electron-Main
+// │ ├─┬ preload
 // │ │ └── preload.js > Preload-Scripts
 // │ └─┬ renderer
 // │   └── index.html > Electron-Renderer
 //
-process.env.DIST_ELECTRON = path.join(__dirname, '..');
-process.env.DIST = path.join(process.env.DIST_ELECTRON, '../dist/renderer');
-process.env.VITE_PUBLIC = process.env.VITE_DEV_SERVER_URL
-  ? path.join(process.env.DIST_ELECTRON, '../src/renderer/public')
-  : process.env.DIST;
+// 根據是否為開發環境設置路徑
+const isDev = process.env.VITE_DEV_SERVER_URL;
+process.env.DIST_ELECTRON = __dirname;
+
+if (isDev) {
+  // 開發環境路徑
+  process.env.DIST = path.join(__dirname, '../../dist/renderer');
+  process.env.VITE_PUBLIC = path.join(__dirname, '../../src/renderer/public');
+} else {
+  // 打包環境路徑
+  process.env.DIST = path.join(__dirname, '../renderer');
+  process.env.VITE_PUBLIC = path.join(process.resourcesPath || __dirname, 'public');
+}
 
 // Disable GPU Acceleration for Windows 7
 if (process.platform === 'win32' && os.release().startsWith('6.1')) app.disableHardwareAcceleration();
@@ -42,7 +51,6 @@ const indexHtml = path.join(process.env.DIST || '', 'index.html');
 async function createWindow() {
   win = new BrowserWindow({
     title: 'Fez Card Game',
-    icon: path.join(process.env.VITE_PUBLIC || '', 'icon.png'),
     width: 1200,
     height: 800,
     minWidth: 800,
@@ -52,8 +60,9 @@ async function createWindow() {
       // 使用安全的配置
       nodeIntegration: false,
       contextIsolation: true,
-      // 禁用 Autofill 相關功能減少控制台警告
-      webSecurity: true,
+      // 允許載入本地文件（為了載入遊戲資源）
+      webSecurity: false,
+      allowRunningInsecureContent: true,
     },
   });
 
@@ -62,8 +71,17 @@ async function createWindow() {
     // Open devTool if the app is not packaged
     win.webContents.openDevTools();
   } else {
-    win.loadFile(indexHtml);
+    // 添加錯誤處理
+    console.log('Loading index.html from:', indexHtml);
+    win.loadFile(indexHtml).catch((err) => {
+      console.error('Failed to load index.html:', err);
+    });
   }
+  
+  // 添加載入失敗處理
+  win.webContents.on('did-fail-load', (event, errorCode, errorDescription, validatedURL) => {
+    console.error('Page failed to load:', { errorCode, errorDescription, validatedURL });
+  });
 
   // Test actively push message to the Electron-Renderer
   win.webContents.on('did-finish-load', () => {
@@ -79,6 +97,9 @@ async function createWindow() {
   // Auto-hide menu bar
   win.setMenuBarVisibility(false);
 }
+
+// 註冊自定義協議必須在 app.ready 之前
+app.setAsDefaultProtocolClient('fez-card');
 
 app.whenReady().then(createWindow);
 

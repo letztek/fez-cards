@@ -15,6 +15,12 @@ app/dist/
 app/build/
 dist-packages/
 
+# Keep release folder structure but ignore large installation files
+!releases/
+releases/**/*.exe
+releases/**/*.dmg
+releases/**/*.zip
+
 # Environment variables
 .env
 .env.local

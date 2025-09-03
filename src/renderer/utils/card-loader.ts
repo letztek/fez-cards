@@ -84,29 +84,29 @@ export class CardLoader {
   private static async getCardImagePaths(): Promise<string[]> {
     const cardPaths: string[] = [];
     
-    // 使用相對於 public 目錄的路徑
+    // 使用相對路徑，在打包環境下會從正確位置載入
     const cardDefinitions = [
       // Warriors
-      '/cards/warriors/w_m_1.jpg',
-      '/cards/warriors/w_m_2.jpg', 
-      '/cards/warriors/w_m_3.jpg',
-      '/cards/warriors/w_w_1.jpg',
-      '/cards/warriors/w_w_2.jpg',
-      '/cards/warriors/w_w_3.jpg',
+      './cards/warriors/w_m_1.jpg',
+      './cards/warriors/w_m_2.jpg', 
+      './cards/warriors/w_m_3.jpg',
+      './cards/warriors/w_w_1.jpg',
+      './cards/warriors/w_w_2.jpg',
+      './cards/warriors/w_w_3.jpg',
       // Mages
-      '/cards/mages/m_m_1.jpg',
-      '/cards/mages/m_m_2.jpg',
-      '/cards/mages/m_m_3.jpg', 
-      '/cards/mages/m_w_1.jpg',
-      '/cards/mages/m_w_2.jpg',
-      '/cards/mages/m_w_3.jpg',
+      './cards/mages/m_m_1.jpg',
+      './cards/mages/m_m_2.jpg',
+      './cards/mages/m_m_3.jpg', 
+      './cards/mages/m_w_1.jpg',
+      './cards/mages/m_w_2.jpg',
+      './cards/mages/m_w_3.jpg',
       // Rangers
-      '/cards/ranger/r_m_1.jpg',
-      '/cards/ranger/r_m_2.jpg',
-      '/cards/ranger/r_m_3.jpg',
-      '/cards/ranger/r_w_1.jpg',
-      '/cards/ranger/r_w_2.jpg',
-      '/cards/ranger/r_w_3.jpg'
+      './cards/ranger/r_m_1.jpg',
+      './cards/ranger/r_m_2.jpg',
+      './cards/ranger/r_m_3.jpg',
+      './cards/ranger/r_w_1.jpg',
+      './cards/ranger/r_w_2.jpg',
+      './cards/ranger/r_w_3.jpg'
     ];
 
     return cardDefinitions;
@@ -134,7 +134,7 @@ export class CardLoader {
       class: cardClass,
       gender,
       imageUrl: filePath,
-      backImageUrl: '/cards/back.jpg',
+      backImageUrl: './cards/back.jpg',
       name,
       description: `${cardClass === CardClass.WARRIOR ? '戰士' : 
                      cardClass === CardClass.MAGE ? '法師' : '遊俠'} - ${

@@ -7,6 +7,7 @@ export default defineConfig({
   plugins: [react()],
   root: './src/renderer',
   publicDir: 'public',
+  base: './',
   css: {
     postcss: './postcss.config.js'
   },
