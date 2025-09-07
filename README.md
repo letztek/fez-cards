@@ -204,7 +204,6 @@ npm run dist
 - **啟動畫面視頻**：FEZ 遊戲素材
 
 ### 開發致謝
-- 特別感謝 [Claude Code](https://claude.ai/code) AI 助手協助開發
 - 感謝所有貢獻者和測試者的寶貴意見
 
 ## 📞 聯絡資訊
