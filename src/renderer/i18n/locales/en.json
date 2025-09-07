@@ -78,6 +78,7 @@
     "rounds": "Rounds",
     "aiDifficulty": "Computer Difficulty",
     "theme": "Theme",
+    "strategyDescription": "Strategy Description",
     "save": "Save Settings",
     "cancel": "Cancel",
     "close": "Close"
@@ -122,6 +123,11 @@
     "easy": "Easy",
     "normal": "Normal",
     "hard": "Hard"
+  },
+  "difficultyDescription": {
+    "easy": "Completely random card selection, no strategy considered, suitable for beginners",
+    "normal": "Analyzes your card patterns and adjusts accordingly, with some strategic thinking",
+    "hard": "Uses advanced strategic analysis, adjusts tactics based on game state, round count and score difference, highly adaptive"
   },
   "loading": {
     "title": "Loading card data...",

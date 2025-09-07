@@ -7,6 +7,7 @@ import { Button } from '../components/Button';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { SplashScreen } from './SplashScreen';
 import { AIFactory } from '../utils/ai-strategy';
+import { audioManager } from '../utils/AudioManager';
 import { BattleResult } from '../types/card';
 import { SimpleImageTest } from './SimpleImageTest';
 import { GameDebug } from './GameDebug';
@@ -70,6 +71,8 @@ function App() {
   const handleStartGame = () => {
     clearError();
     setShowSplash(false); // 關閉啟動畫面
+    // 切換到對戰音樂
+    audioManager.playTrack('battle');
     startNewGame();
   };
 
@@ -151,6 +154,8 @@ function App() {
     setBattlePhase('waiting');
     setComputerCard(null);
     setShowSplash(true); // 返回到啟動畫面
+    // 返回啟動畫面時切換回啟動音樂
+    audioManager.playTrack('splash');
     resetGame();
   };
 
@@ -586,6 +591,8 @@ function App() {
                   setBattlePhase('waiting');
                   setComputerCard(null);
                   setShowSplash(true); // 返回到啟動畫面
+                  // 返回啟動畫面時切換回啟動音樂
+                  audioManager.playTrack('splash');
                   resetGame();
                 }}
                 variant="secondary"

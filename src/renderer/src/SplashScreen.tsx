@@ -7,6 +7,7 @@ import { Statistics } from '../components/Statistics';
 import { KeyboardHelp } from '../components/KeyboardHelp';
 import { useFullscreen } from '../hooks/useFullscreen';
 import { Button } from '../components/Button';
+import { audioManager } from '../utils/AudioManager';
 
 interface SplashScreenProps {
   onComplete: () => void;
@@ -29,7 +30,6 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
   const [showStatistics, setShowStatistics] = useState(false);
   const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const audioRef = useRef<HTMLAudioElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout>();
 
   // 同步語言設定
@@ -40,23 +40,11 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
   }, [settings.language, i18n]);
 
   useEffect(() => {
-    // 啟動音樂（如果可用）
-    const playAudio = async () => {
-      if (audioRef.current) {
-        try {
-          audioRef.current.volume = 0.6; // 設置音量為60%
-          await audioRef.current.play();
-        } catch (error) {
-          console.warn('背景音樂播放失敗:', error);
-        }
-      }
-    };
-
     // 播放視頻
     const playVideo = async () => {
       if (videoRef.current) {
         try {
-          videoRef.current.volume = 0; // 視頻靜音，音樂從 audio 元素播放
+          videoRef.current.volume = 0; // 視頻靜音，音樂從 AudioManager 播放
           await videoRef.current.play();
         } catch (error) {
           console.warn('啟動視頻播放失敗:', error);
@@ -66,7 +54,9 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
 
     // 延遲啟動以避免自動播放限制
     const startSequence = async () => {
-      await Promise.all([playAudio(), playVideo()]);
+      // 播放啟動音樂
+      audioManager.playTrack('splash');
+      await playVideo();
 
       // 3秒後顯示 logo 和按鈕
       timeoutRef.current = setTimeout(() => {
@@ -85,11 +75,6 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
-      // 清理音頻
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
-      }
     };
   }, []);
 
@@ -107,11 +92,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
   };
 
   const handleComplete = () => {
-    // 停止音樂和視頻
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-    }
+    // 停止視頻
     if (videoRef.current) {
       videoRef.current.pause();
     }
@@ -136,13 +117,6 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
       onClick={handleClick}
       style={{ cursor: canSkip ? 'pointer' : 'default' }}
     >
-      {/* 背景音樂 */}
-      <audio
-        ref={audioRef}
-        loop
-        preload="auto"
-        src="/asset/Fantasy Earth Zero Soundtrack/m01.mp3"
-      />
 
       {/* 背景視頻 */}
       <video
@@ -177,8 +151,8 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
                 className="w-96 md:w-[28rem] lg:w-[32rem] h-auto mx-auto drop-shadow-2xl"
                 initial={{ scale: 0.6, opacity: 0, rotateY: -20 }}
                 animate={{ scale: 1, opacity: 1, rotateY: 0 }}
-                transition={{ 
-                  duration: 1.5, 
+                transition={{
+                  duration: 1.5,
                   delay: 0.3,
                   type: "spring",
                   stiffness: 100,
@@ -225,21 +199,21 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 1.4 }}
             >
-              <motion.div 
+              <motion.div
                 className="bg-red-900/30 p-2.5 rounded-lg border border-red-500/30 backdrop-blur-sm hover:bg-red-900/40 transition-colors"
                 whileHover={{ scale: 1.02 }}
               >
                 <div className="text-red-300 font-medium text-xs">⚔️ {t('classes.warrior')}</div>
                 <div className="text-xs text-slate-400 mt-1 leading-tight">{t('classCounters.warrior')}</div>
               </motion.div>
-              <motion.div 
+              <motion.div
                 className="bg-blue-900/30 p-2.5 rounded-lg border border-blue-500/30 backdrop-blur-sm hover:bg-blue-900/40 transition-colors"
                 whileHover={{ scale: 1.02 }}
               >
                 <div className="text-blue-300 font-medium text-xs">🔮 {t('classes.sorcerer')}</div>
                 <div className="text-xs text-slate-400 mt-1 leading-tight">{t('classCounters.sorcerer')}</div>
               </motion.div>
-              <motion.div 
+              <motion.div
                 className="bg-green-900/30 p-2.5 rounded-lg border border-green-500/30 backdrop-blur-sm hover:bg-green-900/40 transition-colors"
                 whileHover={{ scale: 1.02 }}
               >

@@ -78,6 +78,7 @@
     "rounds": "回合數",
     "aiDifficulty": "電腦難度",
     "theme": "主題",
+    "strategyDescription": "策略說明",
     "save": "儲存設定",
     "cancel": "取消",
     "close": "關閉"
@@ -122,6 +123,11 @@
     "easy": "簡單",
     "normal": "普通", 
     "hard": "困難"
+  },
+  "difficultyDescription": {
+    "easy": "完全隨機出牌，不考慮策略，適合新手練習",
+    "normal": "會分析你的出牌模式並做出相應調整，有一定策略性",
+    "hard": "使用高級策略分析，會根據局面、回合數和分數差異調整戰術，具有很強的適應性"
   },
   "loading": {
     "title": "正在載入卡牌資料...",
