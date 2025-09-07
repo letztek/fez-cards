@@ -153,3 +153,6 @@ START_GAME.md
 # Lock files (choose one)
 # package-lock.json  # uncomment if using yarn
 # yarn.lock          # uncomment if using npm
+
+# Asset files
+asset/
