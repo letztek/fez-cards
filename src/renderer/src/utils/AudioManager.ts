@@ -67,7 +67,7 @@ class AudioManager {
         this.fadeIn(audio, this.config.volume, 2000);
       }
 
-      console.log(`Now playing: ${trackId}`);
+      console.log(`🎵 Now playing: ${trackId} (${audio.src})`);
     } catch (error) {
       console.warn(`Failed to play audio track "${trackId}":`, error);
     }

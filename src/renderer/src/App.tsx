@@ -72,6 +72,7 @@ function App() {
     clearError();
     setShowSplash(false); // 關閉啟動畫面
     // 切換到對戰音樂
+    console.log('🎮 Starting game - switching to battle music');
     audioManager.playTrack('battle');
     startNewGame();
   };
