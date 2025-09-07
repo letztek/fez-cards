@@ -10,6 +10,9 @@
 - **精美卡牌設計**：18張獨特角色卡牌，每個職業包含3張男性和3張女性角色
 - **智能AI對手**：提供簡單、普通、困難三種難度，從隨機策略到進階分析
 - **流暢動畫效果**：使用 Framer Motion 打造的卡牌翻轉和戰鬥動畫
+- **沉浸式啟動畫面**：FEZ 主題啟動畫面，8秒循環背景視頻，Cinzel 字體設計
+- **背景音樂系統**：Fantasy Earth Zero 原聲音樂，啟動畫面與對戰音樂自動切換
+- **多語系支援**：支援繁體中文、英文、日文介面，包含完整本地化
 - **遊戲設定系統**：可調整回合數、AI 難度、語言和主題偏好
 - **統計追蹤功能**：詳細的戰績統計、職業使用分析和戰鬥歷史
 - **快捷鍵支援**：完整的鍵盤操作，數字鍵選牌、Enter確認、Esc返回
@@ -77,6 +80,8 @@ npm run dist
 - **Tailwind CSS**: 實用優先的 CSS 框架
 - **Framer Motion**: 動畫和手勢函式庫
 - **Zustand**: 輕量級狀態管理
+- **React-i18next**: 國際化解決方案
+- **Web Audio API**: 背景音樂管理系統
 
 ### 專案結構
 ```
@@ -88,9 +93,11 @@ fez-cards/
 │       ├── components/      # React 組件
 │       ├── stores/          # 狀態管理
 │       ├── types/           # TypeScript 型別定義
-│       ├── utils/           # 工具函數
+│       ├── utils/           # 工具函數 (含 AudioManager)
+│       ├── i18n/           # 多語系配置
 │       └── public/          # 靜態資源
-│           └── cards/       # 卡牌圖片資源
+│           ├── cards/       # 卡牌圖片資源
+│           └── asset/       # 音樂和視頻素材
 ├── dist/                    # 建置輸出
 └── docs/                    # 文檔資料
 ```
@@ -191,13 +198,19 @@ npm run dist
 
 ## 🙏 致謝
 
-- 卡牌圖片素材來源：[來源說明]
-- 特別感謝所有貢獻者和測試者
+### 美術素材
+- **卡牌圖片素材**：感謝繪師 [@nai_ro495228](https://x.com/nai_ro495228?s=21) 提供精美的角色卡牌插圖
+- **背景音樂**：Fantasy Earth Zero 原聲音樂 (Square Enix)
+- **啟動畫面視頻**：FEZ 遊戲素材
+
+### 開發致謝
+- 特別感謝 [Claude Code](https://claude.ai/code) AI 助手協助開發
+- 感謝所有貢獻者和測試者的寶貴意見
 
 ## 📞 聯絡資訊
 
 - 專案維護者：HollyPai
-- Email：haochunpai@gmail.com]
+- Email：haochunpai@gmail.com
 - 專案首頁：https://github.com/letztek/fez-cards
 
 ---
