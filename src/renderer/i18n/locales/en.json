@@ -1,7 +1,7 @@
 {
   "app": {
     "title": "Fez Card Game",
-    "subtitle": "Turn-based Card Battle Game with Three Class Rock-Paper-Scissors"
+    "subtitle": "Card Battle Game with Three Class"
   },
   "classes": {
     "warrior": "Warrior",

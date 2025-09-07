@@ -1,20 +1,43 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
+import { useGameStore } from '../stores/game-store';
+import { Settings } from '../components/Settings';
+import { Statistics } from '../components/Statistics';
+import { KeyboardHelp } from '../components/KeyboardHelp';
+import { useFullscreen } from '../hooks/useFullscreen';
+import { Button } from '../components/Button';
 
 interface SplashScreenProps {
   onComplete: () => void;
+  onStartGame: () => void;
   onSkip?: () => void;
 }
 
 export const SplashScreen: React.FC<SplashScreenProps> = ({
   onComplete,
+  onStartGame,
   onSkip
 }) => {
+  const { t, i18n } = useTranslation();
+  const { settings } = useGameStore();
+  const { isFullscreen, isFullscreenSupported, toggleFullscreen } = useFullscreen();
+
   const [showLogo, setShowLogo] = useState(false);
   const [canSkip, setCanSkip] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [showStatistics, setShowStatistics] = useState(false);
+  const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout>();
+
+  // 同步語言設定
+  useEffect(() => {
+    if (settings.language !== i18n.language) {
+      i18n.changeLanguage(settings.language);
+    }
+  }, [settings.language, i18n]);
 
   useEffect(() => {
     // 啟動音樂（如果可用）
@@ -44,11 +67,11 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
     // 延遲啟動以避免自動播放限制
     const startSequence = async () => {
       await Promise.all([playAudio(), playVideo()]);
-      
-      // 10秒後顯示 logo 和按鈕
+
+      // 3秒後顯示 logo 和按鈕
       timeoutRef.current = setTimeout(() => {
         setShowLogo(true);
-      }, 10000);
+      }, 3000);
 
       // 1秒後允許跳過
       setTimeout(() => {
@@ -72,11 +95,8 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
 
   const handleClick = () => {
     if (!canSkip) return;
-    
-    if (showLogo) {
-      // Logo 已顯示，可以進入遊戲
-      handleComplete();
-    } else {
+
+    if (!showLogo) {
       // 立即顯示 logo 和按鈕
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
@@ -149,19 +169,30 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
             exit={{ opacity: 0, y: -50 }}
             transition={{ duration: 1, ease: "easeOut" }}
           >
-            {/* Logo */}
-            <motion.img
-              src="/asset/processed_image (1).png"
-              alt="FEZ Logo"
-              className="w-64 h-auto mx-auto mb-8 drop-shadow-2xl"
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 1.2, delay: 0.3 }}
-            />
+            {/* Logo - 更大更突出的設計 */}
+            <motion.div className="mb-6">
+              <motion.img
+                src="/asset/processed_image (1).png"
+                alt="FEZ Logo"
+                className="w-96 md:w-[28rem] lg:w-[32rem] h-auto mx-auto drop-shadow-2xl"
+                initial={{ scale: 0.6, opacity: 0, rotateY: -20 }}
+                animate={{ scale: 1, opacity: 1, rotateY: 0 }}
+                transition={{ 
+                  duration: 1.5, 
+                  delay: 0.3,
+                  type: "spring",
+                  stiffness: 100,
+                  damping: 12
+                }}
+                style={{
+                  filter: 'drop-shadow(0 0 30px rgba(255,255,255,0.3)) drop-shadow(0 0 60px rgba(139, 69, 193, 0.4))',
+                }}
+              />
+            </motion.div>
 
-            {/* 標題文字 */}
+            {/* 標題文字 - 縮小並與Logo形成層次 */}
             <motion.h1
-              className="text-4xl md:text-6xl font-bold mb-8 text-white drop-shadow-lg"
+              className="text-3xl md:text-5xl font-bold mb-1 text-white drop-shadow-lg"
               style={{
                 fontFamily: '"Cinzel", "Trajan Pro", serif',
                 textShadow: '0 0 20px rgba(255,255,255,0.5), 0 0 40px rgba(255,255,255,0.3)'
@@ -170,12 +201,12 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.8 }}
             >
-              Fantasy Earth Zero
+              {t('app.title')}
             </motion.h1>
 
-            {/* 副標題 */}
+            {/* 副標題 - 調整間距 */}
             <motion.p
-              className="text-xl md:text-2xl mb-12 text-gray-200 drop-shadow-lg"
+              className="text-lg md:text-xl mb-6 text-gray-200 drop-shadow-lg"
               style={{
                 fontFamily: '"Cinzel", "Trajan Pro", serif',
                 textShadow: '0 0 10px rgba(255,255,255,0.3)'
@@ -184,50 +215,115 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 1.2 }}
             >
-              Card Battle Arena
+              {t('app.subtitle')}
             </motion.p>
 
-            {/* 開始按鈕 */}
-            <motion.button
-              onClick={handleComplete}
-              className="px-8 py-4 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 
-                         text-white font-bold text-xl rounded-lg shadow-2xl
-                         hover:from-blue-500 hover:via-purple-500 hover:to-blue-700
-                         transform hover:scale-105 transition-all duration-300
-                         border border-white/20"
-              style={{
-                fontFamily: '"Cinzel", "Trajan Pro", serif',
-                boxShadow: '0 0 30px rgba(139, 69, 193, 0.6), inset 0 0 20px rgba(255,255,255,0.1)'
-              }}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ 
-                duration: 0.8, 
-                delay: 1.6,
-                type: "spring",
-                stiffness: 100
-              }}
-              whileHover={{ 
-                scale: 1.08,
-                boxShadow: "0 0 40px rgba(139, 69, 193, 0.8)"
-              }}
-              whileTap={{ scale: 0.95 }}
+            {/* 職業說明 - 更緊湊的設計 */}
+            <motion.div
+              className="grid grid-cols-3 gap-3 text-sm mb-6 max-w-lg mx-auto"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 1.4 }}
             >
-              進入遊戲
-            </motion.button>
+              <motion.div 
+                className="bg-red-900/30 p-2.5 rounded-lg border border-red-500/30 backdrop-blur-sm hover:bg-red-900/40 transition-colors"
+                whileHover={{ scale: 1.02 }}
+              >
+                <div className="text-red-300 font-medium text-xs">⚔️ {t('classes.warrior')}</div>
+                <div className="text-xs text-slate-400 mt-1 leading-tight">{t('classCounters.warrior')}</div>
+              </motion.div>
+              <motion.div 
+                className="bg-blue-900/30 p-2.5 rounded-lg border border-blue-500/30 backdrop-blur-sm hover:bg-blue-900/40 transition-colors"
+                whileHover={{ scale: 1.02 }}
+              >
+                <div className="text-blue-300 font-medium text-xs">🔮 {t('classes.sorcerer')}</div>
+                <div className="text-xs text-slate-400 mt-1 leading-tight">{t('classCounters.sorcerer')}</div>
+              </motion.div>
+              <motion.div 
+                className="bg-green-900/30 p-2.5 rounded-lg border border-green-500/30 backdrop-blur-sm hover:bg-green-900/40 transition-colors"
+                whileHover={{ scale: 1.02 }}
+              >
+                <div className="text-green-300 font-medium text-xs">🏹 {t('classes.scout')}</div>
+                <div className="text-xs text-slate-400 mt-1 leading-tight">{t('classCounters.scout')}</div>
+              </motion.div>
+            </motion.div>
 
-            {/* 跳過提示 */}
-            {!showLogo && canSkip && (
-              <motion.div
-                className="absolute bottom-8 right-8 text-white/70 text-sm"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
+            {/* 遊戲設定顯示 - 更簡潔的設計 */}
+            <motion.div
+              className="text-sm text-slate-300 mb-6 bg-slate-800/30 backdrop-blur-sm rounded-lg p-3 max-w-md mx-auto"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 1.6 }}
+            >
+              <div className="font-medium mb-1 text-center">{t('settings.title')}</div>
+              <div className="text-xs text-slate-400 text-center">
+                {t('settings.rounds')}: {settings.maxRounds} | {t('settings.aiDifficulty')}: {t(`difficulty.${settings.aiDifficulty}`)}
+              </div>
+            </motion.div>
+
+            {/* 主選單按鈕 */}
+            <motion.div
+              className="space-y-3 max-w-md mx-auto"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 1.8 }}
+            >
+              <Button
+                onClick={onStartGame}
+                variant="primary"
+                size="large"
+                className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 
+                           hover:from-blue-500 hover:via-purple-500 hover:to-blue-700
+                           border border-white/20"
+                style={{
+                  fontFamily: '"Cinzel", "Trajan Pro", serif',
+                  boxShadow: '0 0 30px rgba(139, 69, 193, 0.6), inset 0 0 20px rgba(255,255,255,0.1)'
+                }}
+              >
+                {t('menu.startGame')}
+              </Button>
+
+              <Button
+                onClick={() => setShowSettings(true)}
+                variant="secondary"
+                className="w-full bg-slate-800/50 backdrop-blur-sm border border-white/10"
                 style={{ fontFamily: '"Cinzel", "Trajan Pro", serif' }}
               >
-                點擊任意處跳過
-              </motion.div>
-            )}
+                {t('menu.settings')}
+              </Button>
+
+              <Button
+                onClick={() => setShowStatistics(true)}
+                variant="secondary"
+                className="w-full bg-slate-800/50 backdrop-blur-sm border border-white/10"
+                style={{ fontFamily: '"Cinzel", "Trajan Pro", serif' }}
+              >
+                {t('menu.statistics')}
+              </Button>
+
+              <Button
+                onClick={() => setShowKeyboardHelp(true)}
+                variant="secondary"
+                className="w-full text-sm bg-slate-800/50 backdrop-blur-sm border border-white/10"
+                style={{ fontFamily: '"Cinzel", "Trajan Pro", serif' }}
+              >
+                ⌨️ {t('menu.keyboardHelp')}
+              </Button>
+
+              {/* 全螢幕按鈕 */}
+              {isFullscreenSupported && (
+                <Button
+                  onClick={toggleFullscreen}
+                  variant="secondary"
+                  className="w-full text-sm bg-slate-800/50 backdrop-blur-sm border border-white/10"
+                  style={{ fontFamily: '"Cinzel", "Trajan Pro", serif' }}
+                >
+                  {isFullscreen ? `📤 ${t('menu.exitFullscreen')}` : `📺 ${t('menu.fullscreen')}`} (F11)
+                </Button>
+              )}
+            </motion.div>
+
+
           </motion.div>
         )}
       </AnimatePresence>
@@ -244,6 +340,21 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
         >
           點擊任意處跳過動畫
         </motion.div>
+      )}
+
+      {/* Settings Modal */}
+      {showSettings && (
+        <Settings onClose={() => setShowSettings(false)} />
+      )}
+
+      {/* Statistics Modal */}
+      {showStatistics && (
+        <Statistics onClose={() => setShowStatistics(false)} />
+      )}
+
+      {/* Keyboard Help Modal */}
+      {showKeyboardHelp && (
+        <KeyboardHelp onClose={() => setShowKeyboardHelp(false)} />
       )}
     </motion.div>
   );

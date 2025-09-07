@@ -69,6 +69,7 @@ function App() {
 
   const handleStartGame = () => {
     clearError();
+    setShowSplash(false); // 關閉啟動畫面
     startNewGame();
   };
 
@@ -149,6 +150,7 @@ function App() {
     setCurrentBattleResult(undefined);
     setBattlePhase('waiting');
     setComputerCard(null);
+    setShowSplash(true); // 返回到啟動畫面
     resetGame();
   };
 
@@ -196,7 +198,7 @@ function App() {
 
   // 顯示啟動畫面
   if (showSplash) {
-    return <SplashScreen onComplete={handleSplashComplete} />;
+    return <SplashScreen onComplete={handleSplashComplete} onStartGame={handleStartGame} />;
   }
 
   // 顯示圖片測試頁面
@@ -579,7 +581,13 @@ function App() {
                 {t('result.playAgain')}
               </Button>
               <Button
-                onClick={handleResetGame}
+                onClick={() => {
+                  setCurrentBattleResult(undefined);
+                  setBattlePhase('waiting');
+                  setComputerCard(null);
+                  setShowSplash(true); // 返回到啟動畫面
+                  resetGame();
+                }}
                 variant="secondary"
                 className="w-full"
               >
