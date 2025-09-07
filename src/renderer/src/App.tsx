@@ -5,6 +5,7 @@ import { useGameStore } from '../stores/game-store';
 import { GameBoard } from '../components/GameBoard';
 import { Button } from '../components/Button';
 import { ErrorBoundary } from '../components/ErrorBoundary';
+import { SplashScreen } from './SplashScreen';
 import { AIFactory } from '../utils/ai-strategy';
 import { BattleResult } from '../types/card';
 import { SimpleImageTest } from './SimpleImageTest';
@@ -49,6 +50,7 @@ function App() {
   const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
   const [showTestModal, setShowTestModal] = useState('');
   const [showSimpleModal, setShowSimpleModal] = useState('');
+  const [showSplash, setShowSplash] = useState(true);
   
   // 全螢幕功能
   const { isFullscreen, isFullscreenSupported, toggleFullscreen } = useFullscreen();
@@ -156,6 +158,10 @@ function App() {
     }
   };
 
+  const handleSplashComplete = () => {
+    setShowSplash(false);
+  };
+
   const handleEscape = () => {
     if (showSettings) {
       setShowSettings(false);
@@ -187,6 +193,11 @@ function App() {
 
   // Debug info
   // console.log('App render - isLoading:', isLoading, 'error:', error, 'gameState.phase:', gameState.phase);
+
+  // 顯示啟動畫面
+  if (showSplash) {
+    return <SplashScreen onComplete={handleSplashComplete} />;
+  }
 
   // 顯示圖片測試頁面
   if (showImageTest) {
