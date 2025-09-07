@@ -7,7 +7,7 @@ import { Button } from '../components/Button';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { SplashScreen } from './SplashScreen';
 import { AIFactory } from '../utils/ai-strategy';
-import { audioManager } from '../utils/AudioManager';
+import { audioManager } from './utils/AudioManager';
 import { BattleResult } from '../types/card';
 import { SimpleImageTest } from './SimpleImageTest';
 import { GameDebug } from './GameDebug';

@@ -7,7 +7,7 @@ import { Statistics } from '../components/Statistics';
 import { KeyboardHelp } from '../components/KeyboardHelp';
 import { useFullscreen } from '../hooks/useFullscreen';
 import { Button } from '../components/Button';
-import { audioManager } from '../utils/AudioManager';
+import { audioManager } from './utils/AudioManager';
 
 interface SplashScreenProps {
   onComplete: () => void;
