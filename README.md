@@ -200,8 +200,6 @@ npm run dist
 
 ### 美術素材
 - **卡牌圖片素材**：感謝繪師 [@nai_ro495228](https://x.com/nai_ro495228?s=21) 提供精美的角色卡牌插圖
-- **背景音樂**：Fantasy Earth Zero 原聲音樂 (Square Enix)
-- **啟動畫面視頻**：FEZ 遊戲素材
 
 ### 開發致謝
 - 感謝所有貢獻者和測試者的寶貴意見
