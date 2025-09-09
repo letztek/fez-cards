@@ -39,6 +39,7 @@
     "computerScore": "コンピューター: {{score}} 勝",
     "selectCard": "カード選択",
     "confirmBattle": "バトル確認",
+    "processing": "処理中...",
     "nextRound": "次のラウンド",
     "backToMenu": "メニューに戻る"
   },

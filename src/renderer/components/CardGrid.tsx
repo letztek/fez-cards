@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Card as CardComponent } from './Card';
 import { Card as CardType } from '../types/card';
+import { useCardLayout } from '../src/hooks/useCardLayout';
 
 interface CardGridProps {
   cards: CardType[];
@@ -29,11 +30,9 @@ const CardGridComponent: React.FC<CardGridProps> = ({
 }) => {
   const { t } = useTranslation();
   
-  // 使用 useMemo 優化計算結果
-  const gridCols = useMemo(() => {
-    if (maxCardsPerRow) {
-      return Math.min(maxCardsPerRow, cards.length);
-    }
+  // 計算預設每行卡牌數
+  const defaultMaxCardsPerRow = useMemo(() => {
+    if (maxCardsPerRow) return maxCardsPerRow;
     
     // Auto-calculate based on card count
     if (cards.length <= 2) return cards.length;
@@ -42,6 +41,16 @@ const CardGridComponent: React.FC<CardGridProps> = ({
     if (cards.length <= 9) return 3;
     return 4;
   }, [maxCardsPerRow, cards.length]);
+
+  // 使用動態佈局 hook
+  const { containerRef, layout } = useCardLayout({
+    cardCount: cards.length,
+    maxCardsPerRow: defaultMaxCardsPerRow,
+    containerPadding: 12, // 減少 padding
+    cardGap: 12, // 減少間距
+    minCardWidth: cardSize === 'small' ? 70 : cardSize === 'large' ? 160 : 100, // 調整最小尺寸
+    maxCardWidth: cardSize === 'small' ? 100 : cardSize === 'large' ? 200 : 150 // 調整最大尺寸
+  });
   
   const getCardState = (card: CardType) => {
     if (disabledCardIds.includes(card.id)) return 'disabled';
@@ -90,7 +99,7 @@ const CardGridComponent: React.FC<CardGridProps> = ({
   };
 
   return (
-    <div className={`w-full ${className}`}>
+    <div ref={containerRef} className={`w-full h-full ${className}`}>
       {title && (
         <div className="text-center mb-4">
           <h3 className="text-lg font-semibold text-white/90">{title}</h3>
@@ -101,15 +110,10 @@ const CardGridComponent: React.FC<CardGridProps> = ({
       )}
 
       <motion.div
-        className={`
-          grid gap-4 justify-items-center
-          grid-cols-${Math.min(gridCols, 6)}
-          sm:grid-cols-${Math.min(gridCols, 4)}
-          md:grid-cols-${Math.min(gridCols, 6)}
-          lg:grid-cols-${gridCols}
-        `}
+        className="grid justify-items-center"
         style={{
-          gridTemplateColumns: `repeat(${gridCols}, minmax(0, 1fr))`
+          gridTemplateColumns: `repeat(${layout.gridCols}, minmax(0, 1fr))`,
+          gap: '12px'
         }}
         variants={containerVariants}
         initial="hidden"
@@ -128,6 +132,7 @@ const CardGridComponent: React.FC<CardGridProps> = ({
               <CardComponent
                 card={card}
                 size={cardSize}
+                dynamicSize={layout.cardSize}
                 state={getCardState(card)}
                 onClick={() => handleCardClick(card)}
                 showBack={showBacks}

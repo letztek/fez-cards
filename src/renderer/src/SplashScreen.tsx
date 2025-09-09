@@ -8,6 +8,7 @@ import { KeyboardHelp } from '../components/KeyboardHelp';
 import { useFullscreen } from '../hooks/useFullscreen';
 import { Button } from '../components/Button';
 import { audioManager } from './utils/AudioManager';
+import { getAssetPath } from './utils/asset-paths';
 
 interface SplashScreenProps {
   onComplete: () => void;
@@ -127,7 +128,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
         playsInline
         preload="auto"
         onEnded={handleVideoEnded}
-        src="/asset/Remove_the_logo_202509032328.mp4"
+        src={getAssetPath("asset/Remove_the_logo_202509032328.mp4")}
       />
 
       {/* 漸層遮罩 */}
@@ -146,7 +147,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
             {/* Logo - 更大更突出的設計 */}
             <motion.div className="mb-6">
               <motion.img
-                src="/asset/processed_image (1).png"
+                src={getAssetPath("asset/processed_image (1).png")}
                 alt="FEZ Logo"
                 className="w-96 md:w-[28rem] lg:w-[32rem] h-auto mx-auto drop-shadow-2xl"
                 initial={{ scale: 0.6, opacity: 0, rotateY: -20 }}

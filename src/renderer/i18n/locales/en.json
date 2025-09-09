@@ -39,6 +39,7 @@
     "computerScore": "Computer: {{score}} wins",
     "selectCard": "Select Card",
     "confirmBattle": "Confirm Battle",
+    "processing": "Processing...",
     "nextRound": "Next Round",
     "backToMenu": "Back to Menu"
   },

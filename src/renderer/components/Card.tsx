@@ -5,6 +5,7 @@ import { Card as CardType, CardClass } from '../types/card';
 interface CardProps {
   card: CardType;
   size?: 'small' | 'medium' | 'large';
+  dynamicSize?: { width: number; height: number };
   state?: 'idle' | 'selected' | 'playing' | 'disabled';
   onClick?: () => void;
   showBack?: boolean;
@@ -38,6 +39,7 @@ const CARD_CLASSES = {
 const CardComponent: React.FC<CardProps> = ({
   card,
   size = 'medium',
+  dynamicSize,
   state = 'idle',
   onClick,
   showBack = false,
@@ -46,7 +48,8 @@ const CardComponent: React.FC<CardProps> = ({
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
-  const cardSize = CARD_SIZES[size];
+  // 優先使用動態尺寸，否則回退到固定尺寸
+  const cardSize = dynamicSize || CARD_SIZES[size];
   const cardStyle = CARD_CLASSES[card.class];
 
   const isClickable = onClick && state !== 'disabled';
@@ -258,6 +261,9 @@ export const Card = memo(CardComponent, (prevProps, nextProps) => {
     prevProps.state === nextProps.state &&
     prevProps.showBack === nextProps.showBack &&
     prevProps.className === nextProps.className &&
-    prevProps.onClick === nextProps.onClick
+    prevProps.onClick === nextProps.onClick &&
+    // 比較動態尺寸
+    (prevProps.dynamicSize?.width === nextProps.dynamicSize?.width &&
+     prevProps.dynamicSize?.height === nextProps.dynamicSize?.height)
   );
 });

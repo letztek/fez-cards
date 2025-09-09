@@ -13,6 +13,7 @@
     "!**/*.{md,txt,log}"
   ],
   "mac": {
+    "icon": "asset/fez_icon/MacOS.appiconset/icon-512x512.png",
     "category": "public.app-category.games",
     "target": [
       {
@@ -26,9 +27,14 @@
     ]
   },
   "win": {
+    "icon": "asset/fez_icon/Windows/Square44x44Logo.targetsize-256.png",
     "target": [
       {
         "target": "portable",
+        "arch": ["x64"]
+      },
+      {
+        "target": "nsis",
         "arch": ["x64"]
       }
     ]

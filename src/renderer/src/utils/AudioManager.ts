@@ -1,3 +1,5 @@
+import { getAssetPath } from './asset-paths';
+
 interface AudioConfig {
   volume: number;
   enabled: boolean;
@@ -21,14 +23,14 @@ class AudioManager {
   constructor() {
     // 預載入所有音樂
     this.preloadTracks([
-      { id: 'splash', src: '/asset/Fantasy Earth Zero Soundtrack/m01.mp3', loop: true },
-      { id: 'battle', src: '/asset/Fantasy Earth Zero Soundtrack/m101.mp3', loop: true },
+      { id: 'splash', src: 'asset/Fantasy Earth Zero Soundtrack/m01.mp3', loop: true },
+      { id: 'battle', src: 'asset/Fantasy Earth Zero Soundtrack/m101.mp3', loop: true },
     ]);
   }
 
   private preloadTracks(tracks: AudioTrack[]) {
     tracks.forEach(track => {
-      const audio = new Audio(track.src);
+      const audio = new Audio(getAssetPath(track.src));
       audio.loop = track.loop || false;
       audio.volume = (track.volume || 1) * this.config.volume;
       audio.preload = 'auto';

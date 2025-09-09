@@ -39,6 +39,7 @@
     "computerScore": "電腦: {{score}} 勝",
     "selectCard": "選擇卡牌",
     "confirmBattle": "確認出牌",
+    "processing": "處理中...",
     "nextRound": "下一回合",
     "backToMenu": "返回主選單"
   },
