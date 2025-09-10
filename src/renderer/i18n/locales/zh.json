@@ -82,7 +82,19 @@
     "strategyDescription": "策略說明",
     "save": "儲存設定",
     "cancel": "取消",
-    "close": "關閉"
+    "close": "關閉",
+    "audio": {
+      "title": "音效設定",
+      "master": "主音量",
+      "music": "背景音樂",
+      "effects": "音效",
+      "test": "測試",
+      "reset": "重置",
+      "mutedWarning": "音效已靜音，請點擊喇叭按鈕解除靜音",
+      "preview": "即時預覽",
+      "description": "主音量會影響所有音效。背景音樂和音效可以獨立調整音量。",
+      "comingSoon": "即將推出"
+    }
   },
   "statistics": {
     "title": "遊戲統計",

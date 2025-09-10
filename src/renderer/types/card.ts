@@ -48,10 +48,37 @@ export interface GameState {
 }
 
 export interface GameSettings {
+  // 遊戲設定
   maxRounds: number;
   aiDifficulty: 'easy' | 'normal' | 'hard';
   language: 'zh' | 'en' | 'ja';
   theme: 'light' | 'dark';
+  
+  // 音效設定
+  audio: {
+    masterVolume: number; // 主音量 (0-1)
+    effectsVolume: number; // 音效音量 (0-1)
+    musicVolume: number; // 背景音樂音量 (0-1)
+    muted: boolean; // 是否靜音
+  };
+  
+  // 顯示設定
+  display: {
+    fullscreen: boolean; // 全螢幕模式
+    resolution: {
+      width: number;
+      height: number;
+    };
+    cardSize: 'small' | 'medium' | 'large'; // 卡牌尺寸偏好
+    reduceAnimations: boolean; // 減少動畫 (無障礙選項)
+  };
+  
+  // 遊戲體驗設定
+  gameplay: {
+    autoAdvance: boolean; // 自動進入下一回合
+    showHints: boolean; // 顯示提示
+    battleSpeed: 'slow' | 'normal' | 'fast'; // 戰鬥動畫速度
+  };
 }
 
 export interface AIStrategy {

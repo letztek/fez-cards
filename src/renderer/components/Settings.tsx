@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useGameStore } from '../stores/game-store';
 import { Button } from './Button';
+import VolumeControl from './VolumeControl';
 
 interface SettingsProps {
   onClose: () => void;
@@ -11,6 +12,7 @@ interface SettingsProps {
 export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
   const { t, i18n } = useTranslation();
   const { settings, updateSettings } = useGameStore();
+  const [activeTab, setActiveTab] = useState<'game' | 'audio'>('game');
 
   const handleMaxRoundsChange = (rounds: number) => {
     updateSettings({ maxRounds: rounds });
@@ -37,7 +39,7 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
       exit={{ opacity: 0 }}
     >
       <motion.div
-        className="bg-slate-800 rounded-lg p-6 max-w-md w-full mx-4 shadow-xl"
+        className="bg-slate-800 rounded-lg p-6 max-w-2xl w-full mx-4 shadow-xl max-h-[90vh] overflow-hidden"
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
@@ -52,7 +54,34 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
           </button>
         </div>
 
-        <div className="space-y-6">
+        {/* 分頁導航 */}
+        <div className="flex space-x-1 mb-6 bg-slate-700 rounded-lg p-1">
+          <button
+            onClick={() => setActiveTab('game')}
+            className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              activeTab === 'game'
+                ? 'bg-slate-600 text-white'
+                : 'text-gray-300 hover:text-white hover:bg-slate-600/50'
+            }`}
+          >
+            🎮 {t('settings.title')}
+          </button>
+          <button
+            onClick={() => setActiveTab('audio')}
+            className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              activeTab === 'audio'
+                ? 'bg-slate-600 text-white'
+                : 'text-gray-300 hover:text-white hover:bg-slate-600/50'
+            }`}
+          >
+            🔊 {t('settings.audio.title')}
+          </button>
+        </div>
+
+        {/* 內容區域 */}
+        <div className="overflow-y-auto max-h-[60vh]">
+          {activeTab === 'game' && (
+            <div className="space-y-6">
           {/* 回合數設定 */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -160,6 +189,12 @@ export const Settings: React.FC<SettingsProps> = ({ onClose }) => {
               ))}
             </div>
           </div>
+            </div>
+          )}
+          
+          {activeTab === 'audio' && (
+            <VolumeControl />
+          )}
         </div>
 
         <div className="mt-8 flex justify-end space-x-3">

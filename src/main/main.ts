@@ -1,4 +1,4 @@
-import { app, BrowserWindow, shell, ipcMain, protocol } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, protocol, screen } from 'electron';
 import * as path from 'path';
 import * as os from 'os';
 
@@ -140,5 +140,142 @@ ipcMain.handle('open-win', (_, arg) => {
     childWindow.loadURL(`${url}#${arg}`);
   } else {
     childWindow.loadFile(indexHtml, { hash: arg });
+  }
+});
+
+// Display Settings API
+ipcMain.handle('display:get-all-displays', () => {
+  return screen.getAllDisplays().map(display => ({
+    id: display.id,
+    label: display.label,
+    bounds: display.bounds,
+    size: display.size,
+    workAreaSize: display.workAreaSize,
+    scaleFactor: display.scaleFactor,
+    primary: display.internal ?? false
+  }));
+});
+
+ipcMain.handle('display:get-primary-display', () => {
+  const display = screen.getPrimaryDisplay();
+  return {
+    id: display.id,
+    label: display.label,
+    bounds: display.bounds,
+    size: display.size,
+    workAreaSize: display.workAreaSize,
+    scaleFactor: display.scaleFactor,
+    primary: true
+  };
+});
+
+ipcMain.handle('window:set-fullscreen', (_, fullscreen: boolean) => {
+  if (win) {
+    win.setFullScreen(fullscreen);
+    return win.isFullScreen();
+  }
+  return false;
+});
+
+ipcMain.handle('window:is-fullscreen', () => {
+  return win?.isFullScreen() ?? false;
+});
+
+ipcMain.handle('window:set-size', (_, width: number, height: number) => {
+  if (win) {
+    win.setSize(width, height);
+    const [currentWidth, currentHeight] = win.getSize();
+    return { width: currentWidth, height: currentHeight };
+  }
+  return null;
+});
+
+ipcMain.handle('window:get-size', () => {
+  if (win) {
+    const [width, height] = win.getSize();
+    return { width, height };
+  }
+  return null;
+});
+
+ipcMain.handle('window:center', () => {
+  if (win) {
+    win.center();
+    return true;
+  }
+  return false;
+});
+
+ipcMain.handle('window:set-resizable', (_, resizable: boolean) => {
+  if (win) {
+    win.setResizable(resizable);
+    return win.isResizable();
+  }
+  return false;
+});
+
+ipcMain.handle('window:maximize', () => {
+  if (win) {
+    if (win.isMaximized()) {
+      win.unmaximize();
+    } else {
+      win.maximize();
+    }
+    return win.isMaximized();
+  }
+  return false;
+});
+
+ipcMain.handle('window:minimize', () => {
+  if (win) {
+    win.minimize();
+    return true;
+  }
+  return false;
+});
+
+// Settings Sync API
+let appSettings: any = {};
+
+ipcMain.handle('settings:sync-from-renderer', (_, settings) => {
+  appSettings = settings;
+  return true;
+});
+
+ipcMain.handle('settings:get-from-main', () => {
+  return appSettings;
+});
+
+// System Volume API (limited cross-platform support)
+ipcMain.handle('system:get-volume', async () => {
+  // Note: System volume control requires platform-specific implementation
+  // This is a placeholder for future platform-specific modules
+  try {
+    if (process.platform === 'darwin') {
+      // macOS system volume would require osascript or native module
+      return { supported: false, volume: 0, reason: 'macOS system volume requires additional implementation' };
+    } else if (process.platform === 'win32') {
+      // Windows system volume would require Windows API or native module
+      return { supported: false, volume: 0, reason: 'Windows system volume requires additional implementation' };
+    } else {
+      return { supported: false, volume: 0, reason: 'Platform not supported' };
+    }
+  } catch (error) {
+    return { supported: false, volume: 0, error: error instanceof Error ? error.message : String(error) };
+  }
+});
+
+ipcMain.handle('system:set-volume', async (_, volume: number) => {
+  // Note: System volume control requires platform-specific implementation
+  try {
+    if (process.platform === 'darwin') {
+      return { success: false, reason: 'macOS system volume requires additional implementation' };
+    } else if (process.platform === 'win32') {
+      return { success: false, reason: 'Windows system volume requires additional implementation' };
+    } else {
+      return { success: false, reason: 'Platform not supported' };
+    }
+  } catch (error) {
+    return { success: false, error: error instanceof Error ? error.message : String(error) };
   }
 });

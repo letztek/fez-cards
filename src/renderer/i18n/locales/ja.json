@@ -82,7 +82,19 @@
     "strategyDescription": "戦略説明",
     "save": "設定を保存",
     "cancel": "キャンセル",
-    "close": "閉じる"
+    "close": "閉じる",
+    "audio": {
+      "title": "オーディオ設定",
+      "master": "マスター音量",
+      "music": "背景音楽",
+      "effects": "効果音",
+      "test": "テスト",
+      "reset": "リセット",
+      "mutedWarning": "オーディオがミュートされています。スピーカーボタンをクリックしてミュートを解除してください。",
+      "preview": "ライブプレビュー",
+      "description": "マスター音量はすべてのオーディオに影響します。背景音楽と効果音は個別に調整できます。",
+      "comingSoon": "近日公開"
+    }
   },
   "statistics": {
     "title": "ゲーム統計",

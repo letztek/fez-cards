@@ -1,8 +1,11 @@
 import { getAssetPath } from './asset-paths';
+import { settingsManager } from '../../utils/SettingsManager';
 
 interface AudioConfig {
   volume: number;
   enabled: boolean;
+  effectsVolume: number;
+  musicVolume: number;
 }
 
 interface AudioTrack {
@@ -10,6 +13,7 @@ interface AudioTrack {
   src: string;
   loop?: boolean;
   volume?: number;
+  type?: 'music' | 'effect';
 }
 
 class AudioManager {
@@ -17,14 +21,26 @@ class AudioManager {
   private currentTrack: string | null = null;
   private config: AudioConfig = {
     volume: 0.6,
-    enabled: true
+    enabled: true,
+    effectsVolume: 0.8,
+    musicVolume: 0.6
   };
 
   constructor() {
+    // 從設定管理器載入音效設定
+    this.loadSettingsFromManager();
+    
+    // 監聽設定變更
+    settingsManager.addChangeListener((event) => {
+      if (event.key === 'audio') {
+        this.updateAudioSettings(event.newValue);
+      }
+    });
+    
     // 預載入所有音樂
     this.preloadTracks([
-      { id: 'splash', src: 'asset/Fantasy Earth Zero Soundtrack/m01.mp3', loop: true },
-      { id: 'battle', src: 'asset/Fantasy Earth Zero Soundtrack/m101.mp3', loop: true },
+      { id: 'splash', src: 'asset/Fantasy Earth Zero Soundtrack/m01.mp3', loop: true, type: 'music' },
+      { id: 'battle', src: 'asset/Fantasy Earth Zero Soundtrack/m101.mp3', loop: true, type: 'music' },
     ]);
   }
 
@@ -32,7 +48,12 @@ class AudioManager {
     tracks.forEach(track => {
       const audio = new Audio(getAssetPath(track.src));
       audio.loop = track.loop || false;
-      audio.volume = (track.volume || 1) * this.config.volume;
+      
+      // 根據音軌類型設定不同音量
+      const baseVolume = track.volume || 1;
+      const typeVolume = track.type === 'music' ? this.config.musicVolume : this.config.effectsVolume;
+      audio.volume = baseVolume * typeVolume * this.config.volume;
+      
       audio.preload = 'auto';
       this.audioElements.set(track.id, audio);
     });
@@ -51,11 +72,16 @@ class AudioManager {
       // 停止當前播放的音軌
       await this.stopCurrentTrack();
 
-      // 設置音量
+      // 設置音量（根據音軌類型）
+      const trackType = this.getTrackType(trackId);
+      const targetVolume = trackType === 'music' ? 
+        this.config.musicVolume * this.config.volume : 
+        this.config.effectsVolume * this.config.volume;
+      
       if (fadeIn) {
         audio.volume = 0;
       } else {
-        audio.volume = this.config.volume;
+        audio.volume = targetVolume;
       }
 
       // 重置播放位置並播放
@@ -66,7 +92,11 @@ class AudioManager {
 
       // 淡入效果
       if (fadeIn) {
-        this.fadeIn(audio, this.config.volume, 2000);
+        const trackType = this.getTrackType(trackId);
+        const targetVolume = trackType === 'music' ? 
+          this.config.musicVolume * this.config.volume : 
+          this.config.effectsVolume * this.config.volume;
+        this.fadeIn(audio, targetVolume, 2000);
       }
 
       console.log(`🎵 Now playing: ${trackId} (${audio.src})`);
@@ -133,11 +163,17 @@ class AudioManager {
 
   setVolume(volume: number) {
     this.config.volume = Math.max(0, Math.min(1, volume));
-    
-    // 更新所有音頻元素的音量
-    this.audioElements.forEach(audio => {
-      audio.volume = this.config.volume;
-    });
+    this.updateAllAudioVolumes();
+  }
+  
+  setMusicVolume(volume: number) {
+    this.config.musicVolume = Math.max(0, Math.min(1, volume));
+    this.updateAllAudioVolumes();
+  }
+  
+  setEffectsVolume(volume: number) {
+    this.config.effectsVolume = Math.max(0, Math.min(1, volume));
+    this.updateAllAudioVolumes();
   }
 
   setEnabled(enabled: boolean) {
@@ -159,9 +195,61 @@ class AudioManager {
   getVolume(): number {
     return this.config.volume;
   }
+  
+  getMusicVolume(): number {
+    return this.config.musicVolume;
+  }
+  
+  getEffectsVolume(): number {
+    return this.config.effectsVolume;
+  }
 
+  // 從設定管理器載入設定
+  private loadSettingsFromManager() {
+    const settings = settingsManager.getSettings();
+    this.config.volume = settings.audio.masterVolume;
+    this.config.musicVolume = settings.audio.musicVolume;
+    this.config.effectsVolume = settings.audio.effectsVolume;
+    this.config.enabled = !settings.audio.muted;
+  }
+  
+  // 更新音效設定
+  private updateAudioSettings(audioSettings: any) {
+    this.config.volume = audioSettings.masterVolume;
+    this.config.musicVolume = audioSettings.musicVolume;
+    this.config.effectsVolume = audioSettings.effectsVolume;
+    this.config.enabled = !audioSettings.muted;
+    
+    this.updateAllAudioVolumes();
+    
+    if (!this.config.enabled && this.currentTrack) {
+      this.stopCurrentTrack(false);
+    }
+  }
+  
+  // 更新所有音頻元素的音量
+  private updateAllAudioVolumes() {
+    this.audioElements.forEach((audio, trackId) => {
+      const trackType = this.getTrackType(trackId);
+      const typeVolume = trackType === 'music' ? this.config.musicVolume : this.config.effectsVolume;
+      audio.volume = typeVolume * this.config.volume;
+    });
+  }
+  
+  // 取得音軌類型
+  private getTrackType(trackId: string): 'music' | 'effect' {
+    // 根據 trackId 判斷類型，預設為音樂
+    if (trackId.includes('effect') || trackId.includes('sfx')) {
+      return 'effect';
+    }
+    return 'music';
+  }
+  
   // 清理資源
   cleanup() {
+    // 移除設定監聽器
+    settingsManager.removeChangeListener(this.updateAudioSettings.bind(this));
+    
     this.audioElements.forEach(audio => {
       audio.pause();
       audio.src = '';

@@ -82,7 +82,19 @@
     "strategyDescription": "Strategy Description",
     "save": "Save Settings",
     "cancel": "Cancel",
-    "close": "Close"
+    "close": "Close",
+    "audio": {
+      "title": "Audio Settings",
+      "master": "Master Volume",
+      "music": "Background Music",
+      "effects": "Sound Effects",
+      "test": "Test",
+      "reset": "Reset",
+      "mutedWarning": "Audio is muted. Click the speaker button to unmute.",
+      "preview": "Live Preview",
+      "description": "Master volume affects all audio. Background music and sound effects can be adjusted independently.",
+      "comingSoon": "Coming Soon"
+    }
   },
   "statistics": {
     "title": "Game Statistics",

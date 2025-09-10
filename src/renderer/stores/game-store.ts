@@ -5,6 +5,7 @@ import { CardLoader } from '../utils/card-loader';
 import { CardManager } from '../utils/card-manager';
 import { BattleEngine } from '../utils/battle-engine';
 import { StorageManager } from '../utils/storage';
+import { settingsManager } from '../utils/SettingsManager';
 
 interface GameStore {
   // State
@@ -27,17 +28,9 @@ interface GameStore {
   clearError: () => void;
 }
 
-const DEFAULT_SETTINGS: GameSettings = {
-  maxRounds: 6,
-  aiDifficulty: 'normal',
-  language: 'zh',
-  theme: 'dark'
-};
-
-// 載入儲存的設定
+// 使用新的設定管理器載入設定
 const loadStoredSettings = (): GameSettings => {
-  const stored = StorageManager.loadSettings();
-  return stored ? { ...DEFAULT_SETTINGS, ...stored } : DEFAULT_SETTINGS;
+  return settingsManager.getSettings();
 };
 
 const INITIAL_GAME_STATE: GameState = {
@@ -229,15 +222,10 @@ export const useGameStore = create<GameStore>()(
     // Update game settings
     updateSettings: (newSettings: Partial<GameSettings>) => {
       set((state) => {
-        // 驗證回合數不能超過手牌數（每人6張卡牌）
-        if (newSettings.maxRounds && newSettings.maxRounds > 6) {
-          // console.warn('Maximum rounds cannot exceed 6 (hand size limit)');
-          newSettings.maxRounds = 6;
-        }
-        
-        state.settings = { ...state.settings, ...newSettings };
-        // 儲存設定到本地儲存
-        StorageManager.saveSettings(state.settings);
+        // 使用新的設定管理器更新設定
+        settingsManager.updateSettings(newSettings);
+        // 更新 store 中的設定狀態
+        state.settings = settingsManager.getSettings();
       });
     },
 
