@@ -1,6 +1,14 @@
 import { getAssetPath } from './asset-paths';
 import { settingsManager } from '../../utils/SettingsManager';
 
+// AudioContext 類型定義
+declare global {
+  interface Window {
+    AudioContext: typeof AudioContext;
+    webkitAudioContext: typeof AudioContext;
+  }
+}
+
 interface AudioConfig {
   volume: number;
   enabled: boolean;
@@ -37,25 +45,46 @@ class AudioManager {
       }
     });
     
-    // 預載入所有音樂
+    // 預載入所有音樂和音效 - 只使用 MP3 格式
     this.preloadTracks([
       { id: 'splash', src: 'asset/Fantasy Earth Zero Soundtrack/m01.mp3', loop: true, type: 'music' },
       { id: 'battle', src: 'asset/Fantasy Earth Zero Soundtrack/m101.mp3', loop: true, type: 'music' },
+      { id: 'flipcard', src: 'asset/84322__splashdust__flipcard.mp3', loop: false, type: 'effect', volume: 0.8 },
     ]);
   }
 
   private preloadTracks(tracks: AudioTrack[]) {
-    tracks.forEach(track => {
-      const audio = new Audio(getAssetPath(track.src));
+    tracks.forEach((track) => {
+      const fullPath = getAssetPath(track.src);
+      console.log(`🎵 Preloading ${track.type} track: ${track.id} from ${fullPath}`);
+      
+      const audio = new Audio();
+      
+      // 簡化的錯誤處理
+      audio.addEventListener('error', (e) => {
+        console.error(`❌ Failed to preload ${track.id}:`, audio.error?.code || 'Unknown error');
+      });
+      
+      audio.addEventListener('canplaythrough', () => {
+        console.log(`✅ Preloaded successfully: ${track.id}`);
+      });
+      
+      // 設置屬性
       audio.loop = track.loop || false;
+      audio.preload = 'auto';
       
       // 根據音軌類型設定不同音量
       const baseVolume = track.volume || 1;
       const typeVolume = track.type === 'music' ? this.config.musicVolume : this.config.effectsVolume;
       audio.volume = baseVolume * typeVolume * this.config.volume;
       
-      audio.preload = 'auto';
+      // 設置源並載入
+      audio.src = fullPath;
+      
       this.audioElements.set(track.id, audio);
+      
+      // 開始載入
+      audio.load();
     });
   }
 
@@ -69,11 +98,26 @@ class AudioManager {
     }
 
     try {
-      // 停止當前播放的音軌
+      const trackType = this.getTrackType(trackId);
+      
+      // 對於音效，不需要停止當前音軌，可以同時播放
+      if (trackType === 'effect') {
+        // 設置音效音量
+        const targetVolume = this.config.effectsVolume * this.config.volume;
+        audio.volume = targetVolume;
+        
+        // 重置播放位置並播放
+        audio.currentTime = 0;
+        await audio.play();
+        
+        console.log(`🔔 Playing effect: ${trackId}`);
+        return;
+      }
+
+      // 對於音樂，停止當前播放的音軌
       await this.stopCurrentTrack();
 
       // 設置音量（根據音軌類型）
-      const trackType = this.getTrackType(trackId);
       const targetVolume = trackType === 'music' ? 
         this.config.musicVolume * this.config.volume : 
         this.config.effectsVolume * this.config.volume;
@@ -236,10 +280,140 @@ class AudioManager {
     });
   }
   
+  // 播放音效的簡化方法 - 只使用 MP3 格式
+  async playEffect(effectId: string): Promise<void> {
+    if (!this.config.enabled) {
+      console.log(`🔇 Audio disabled, skipping effect: ${effectId}`);
+      return;
+    }
+
+    let audio = this.audioElements.get(effectId);
+    
+    // 如果音頻元素不存在或有問題，嘗試重新創建
+    if (!audio || audio.error) {
+      console.log(`🔄 Recreating audio element for: ${effectId}`);
+      
+      try {
+        // 使用正確的路徑（檔案現在在 public/asset 中）
+        const audioPath = 'asset/84322__splashdust__flipcard.mp3';
+        const fullPath = getAssetPath(audioPath);
+        console.log(`🎵 Loading MP3: ${fullPath}`);
+        
+        const newAudio = new Audio(fullPath);
+        
+        // 設置基本屬性
+        newAudio.preload = 'auto';
+        newAudio.volume = this.config.effectsVolume * this.config.volume * 0.8;
+        
+        // 載入音頻
+        await new Promise((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            reject(new Error('Timeout loading MP3'));
+          }, 3000);
+          
+          newAudio.oncanplaythrough = () => {
+            clearTimeout(timeout);
+            console.log(`✅ MP3 loaded successfully: ${effectId}`);
+            resolve(newAudio);
+          };
+          
+          newAudio.onerror = (e) => {
+            clearTimeout(timeout);
+            const errorMsg = newAudio.error ? 
+              `Error code: ${newAudio.error.code}` : 
+              'Unknown audio error';
+            reject(new Error(`Failed to load MP3: ${errorMsg}`));
+          };
+          
+          newAudio.load();
+        });
+        
+        this.audioElements.set(effectId, newAudio);
+        audio = newAudio;
+        
+      } catch (error) {
+        console.error(`❌ Failed to load MP3 for ${effectId}:`, error);
+        console.log(`🔔 Using fallback sound effect instead`);
+        this.createFallbackEffect();
+        return;
+      }
+    }
+
+    if (!audio) {
+      console.warn(`Effect "${effectId}" not found`);
+      return;
+    }
+
+    try {
+      // 設置音效音量
+      const targetVolume = this.config.effectsVolume * this.config.volume * 0.8;
+      audio.volume = targetVolume;
+      
+      // 重置播放位置並播放
+      audio.currentTime = 0;
+      await audio.play();
+      
+      console.log(`🔔 Playing effect: ${effectId} at volume ${targetVolume.toFixed(2)}`);
+    } catch (error) {
+      console.warn(`Failed to play effect "${effectId}":`, error);
+      
+      // 嘗試創建純音效作為後備方案
+      this.createFallbackEffect();
+    }
+  }
+
+  // 創建後備音效（使用 Web Audio API 生成翻牌聲）
+  private createFallbackEffect(): void {
+    if (!window.AudioContext && !window.webkitAudioContext) {
+      console.warn('Web Audio API not supported, no fallback sound available');
+      return;
+    }
+
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      const audioContext = new AudioContext();
+
+      // 創建翻牌音效 - 兩個快速的"咔嚓"聲
+      const createFlipSound = (startTime: number, frequency: number) => {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        // 設定頻率變化模擬翻牌聲
+        oscillator.frequency.setValueAtTime(frequency, startTime);
+        oscillator.frequency.exponentialRampToValueAtTime(frequency * 0.5, startTime + 0.05);
+
+        // 音量包絡
+        const volume = 0.15 * this.config.effectsVolume * this.config.volume;
+        gainNode.gain.setValueAtTime(0, startTime);
+        gainNode.gain.linearRampToValueAtTime(volume, startTime + 0.01);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + 0.08);
+
+        oscillator.type = 'square'; // 使用方波產生更清脆的聲音
+        oscillator.start(startTime);
+        oscillator.stop(startTime + 0.08);
+      };
+
+      const now = audioContext.currentTime;
+      
+      // 第一個翻牌聲
+      createFlipSound(now, 1200);
+      // 第二個翻牌聲（稍微延遲）
+      createFlipSound(now + 0.06, 800);
+
+      console.log('🔔 Playing fallback flip sound effect');
+
+    } catch (error) {
+      console.warn('Failed to create fallback sound:', error);
+    }
+  }
+
   // 取得音軌類型
   private getTrackType(trackId: string): 'music' | 'effect' {
-    // 根據 trackId 判斷類型，預設為音樂
-    if (trackId.includes('effect') || trackId.includes('sfx')) {
+    // 根據 trackId 判斷類型
+    if (trackId.includes('effect') || trackId.includes('sfx') || trackId === 'flipcard') {
       return 'effect';
     }
     return 'music';

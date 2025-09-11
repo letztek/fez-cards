@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card as CardType, CardClass } from '../types/card';
+import { audioManager } from '../src/utils/AudioManager';
 
 interface FlipCardProps {
   card: CardType;
@@ -56,13 +57,19 @@ export const FlipCard: React.FC<FlipCardProps> = ({
     if (autoFlip && !isFlippedState) {
       const timer = setTimeout(() => {
         // console.log(`🎴 電腦卡牌開始翻轉: ${card.name}`);
+        
+        // 播放翻牌音效
+        audioManager.playEffect('flipcard').catch(error => {
+          console.warn('Failed to play flip card sound:', error);
+        });
+        
         setIsFlippedState(true);
         
-        // 翻轉動畫完成後的回調
+        // 翻轉動畫完成後的回調（配合音效長度約970ms）
         const completeTimer = setTimeout(() => {
           // console.log(`✨ 電腦卡牌翻轉完成: ${card.name}`);
           onFlipComplete?.();
-        }, 1000); // CSS transition 時間
+        }, 970); // 配合音效長度
 
         return () => clearTimeout(completeTimer);
       }, flipDelay);
@@ -102,7 +109,7 @@ export const FlipCard: React.FC<FlipCardProps> = ({
           width: '100%',
           height: '100%',
           transformStyle: 'preserve-3d',
-          transition: 'transform 1s ease-in-out',
+          transition: 'transform 0.97s ease-in-out',
           transform: isFlippedState ? 'rotateY(180deg)' : 'rotateY(0deg)'
         }}
       >

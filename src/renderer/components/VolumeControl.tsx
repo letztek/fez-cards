@@ -126,7 +126,9 @@ export const VolumeControl: React.FC<VolumeControlProps> = ({ className = '' }) 
           await audioManager.playTrack('splash', false);
         }
       } else if (type === 'effects') {
-        console.log('Testing effects volume:', effectsVolume);
+        // 播放翻牌音效作為測試
+        console.log('🔧 Testing flip card effect...');
+        await audioManager.playEffect('flipcard');
       }
     } catch (error) {
       console.warn('Failed to test volume:', error);
@@ -271,16 +273,15 @@ export const VolumeControl: React.FC<VolumeControlProps> = ({ className = '' }) 
           color="from-green-500 to-green-600"
         />
 
-        {/* 音效滑桿 - 為未來擴充準備，目前禁用 */}
-        <div className="opacity-50 pointer-events-none">
-          <VolumeSlider
-            label={`${t('settings.audio.effects')} (${t('settings.audio.comingSoon')})`}
-            value={effectsVolume}
-            onChange={() => { }} // 暫時禁用
-            icon="🔔"
-            color="from-gray-500 to-gray-600"
-          />
-        </div>
+        {/* 音效滑桿 - 現在支援翻牌音效 */}
+        <VolumeSlider
+          label={t('settings.audio.effects')}
+          value={effectsVolume}
+          onChange={(value) => handleVolumeChange('effects', value)}
+          onTest={() => handleVolumeTest('effects')}
+          icon="🔔"
+          color="from-purple-500 to-purple-600"
+        />
       </div>
 
       {/* 說明文字 */}
@@ -291,8 +292,12 @@ export const VolumeControl: React.FC<VolumeControlProps> = ({ className = '' }) 
           <span>目前支援：背景音樂音量控制</span>
         </div>
         <div className="flex items-center space-x-2">
-          <span className="text-yellow-400">🔔</span>
-          <span>即將支援：遊戲音效、UI 音效</span>
+          <span className="text-purple-400">🔔</span>
+          <span>目前支援：翻牌音效</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <span className="text-yellow-400">⚔️</span>
+          <span>即將支援：對戰音效、UI 音效</span>
         </div>
       </div>
     </div>
